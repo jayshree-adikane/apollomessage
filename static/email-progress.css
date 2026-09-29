@@ -1,0 +1,275 @@
+/* ============================================================
+   EMAIL JOB PROGRESS TOAST
+   Bottom-right card that follows a background send/queue job
+   across pages. Rendered by /static/email-progress.js.
+   ============================================================ */
+
+.ej-toast {
+    --ej-bg: #ffffff;
+    --ej-surface: #f6f9fc;
+    --ej-border: #e3e9f1;
+    --ej-text: #0b2a5b;
+    --ej-muted: #64748b;
+    --ej-blue: #1f5fa8;
+    --ej-cyan: #3fb6e0;
+    --ej-green: #16a34a;
+    --ej-red: #dc2626;
+    --ej-amber: #d97706;
+
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1090;
+    width: 370px;
+    max-width: calc(100vw - 32px);
+    background: var(--ej-bg);
+    color: var(--ej-text);
+    border: 1px solid var(--ej-border);
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(11, 42, 91, .22);
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform .25s ease, opacity .25s ease;
+}
+
+.ej-toast.ej-show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+html[data-theme="dark"] .ej-toast {
+    --ej-bg: #1b2027;
+    --ej-surface: #20262e;
+    --ej-border: #2f3640;
+    --ej-text: #e6edf5;
+    --ej-muted: #9aa6b4;
+    --ej-blue: #3fb6e0;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+}
+
+.ej-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 12px 10px 14px;
+}
+
+.ej-head-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    flex: 0 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: linear-gradient(135deg, #1f5fa8, #3fb6e0);
+    font-size: 15px;
+}
+
+.ej-toast.ej-state-failed .ej-head-icon {
+    background: linear-gradient(135deg, #b91c1c, #ef4444);
+}
+
+.ej-toast.ej-state-done .ej-head-icon {
+    background: linear-gradient(135deg, #15803d, #22c55e);
+}
+
+.ej-head-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.ej-title {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.ej-subtitle {
+    font-size: 12px;
+    color: var(--ej-muted);
+    margin-top: 2px;
+}
+
+.ej-head-btn {
+    border: 0;
+    background: transparent;
+    color: var(--ej-muted);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ej-head-btn:hover {
+    background: var(--ej-surface);
+    color: var(--ej-text);
+}
+
+.ej-bar {
+    height: 5px;
+    margin: 0 14px 10px;
+    border-radius: 999px;
+    background: var(--ej-surface);
+    overflow: hidden;
+}
+
+.ej-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1f5fa8, #3fb6e0);
+    transition: width .5s ease;
+}
+
+.ej-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 8px 8px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.ej-toast.ej-minimized .ej-list,
+.ej-toast.ej-minimized .ej-foot {
+    display: none;
+}
+
+.ej-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 6px;
+    border-radius: 10px;
+}
+
+.ej-item.ej-sending {
+    background: var(--ej-surface);
+}
+
+.ej-avatar {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    border-radius: 50%;
+    background: var(--ej-surface);
+    border: 1px solid var(--ej-border);
+    color: var(--ej-blue);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+.ej-item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.ej-name {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ej-email {
+    font-size: 11px;
+    color: var(--ej-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ej-error {
+    font-size: 11px;
+    color: var(--ej-red);
+    margin-top: 3px;
+    word-break: break-word;
+}
+
+.ej-note {
+    font-size: 11px;
+    color: var(--ej-muted);
+    margin-top: 2px;
+}
+
+.ej-status {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    padding-top: 6px;
+    white-space: nowrap;
+}
+
+.ej-status.ej-sent { color: var(--ej-green); }
+.ej-status.ej-queued { color: var(--ej-blue); }
+.ej-status.ej-failed { color: var(--ej-red); }
+.ej-status.ej-waiting { color: var(--ej-muted); }
+.ej-status.ej-sending { color: var(--ej-blue); }
+
+.ej-spinner {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2px solid rgba(63, 182, 224, .3);
+    border-top-color: var(--ej-cyan);
+    animation: ejSpin .7s linear infinite;
+}
+
+/* Little envelope flying off when an email is sent */
+.ej-status.ej-sent .ej-fly {
+    animation: ejFly .6s ease-out 1;
+}
+
+@keyframes ejSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes ejFly {
+    0%   { transform: translate(-6px, 4px) scale(.6); opacity: 0; }
+    60%  { transform: translate(2px, -2px) scale(1.15); opacity: 1; }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+.ej-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px 12px;
+    border-top: 1px solid var(--ej-border);
+    font-size: 12px;
+    color: var(--ej-muted);
+}
+
+.ej-foot a {
+    color: var(--ej-blue);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ej-foot a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .ej-toast {
+        right: 16px;
+        left: 16px;
+        bottom: 16px;
+        width: auto;
+    }
+}

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blacklist & Deleted Prospects | Valasys Media</title>
+
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        
+        <!-- Font Awesome for Icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/sent_emails.css">
+    <style>
+        :root {
+            --brand-orange: #0a2b60;
+            --brand-dark: #3fa2cb;
+            --brand-light: #eef8fc;
+            --border: #0a2b60;
+            --muted: #6b7280;
+
+            /* Light theme surfaces */
+            --page-bg: #f5f6f8;
+            --surface: #ffffff;
+            --surface-soft: #fafafa;
+            --surface-input: #ffffff;
+            --text-main: #232323;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --row-border: #f0f1f3;
+            --icon-muted: #c5c7ca;
+            --shadow-card: 0 3px 14px rgba(0,0,0,.05);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+
+            /* Dark theme surfaces */
+            --page-bg: #12161b;
+            --surface: #1b222a;
+            --surface-soft: #222a33;
+            --surface-input: #202831;
+            --text-main: #f3f4f6;
+            --text-secondary: #cbd5e1;
+            --text-muted: #9ca3af;
+            --border: #343d48;
+            --row-border: #2d3640;
+            --icon-muted: #64748b;
+            --shadow-card: 0 6px 20px rgba(0,0,0,.28);
+        }
+
+        body {
+            background: var(--page-bg);
+            color: var(--text-main);
+            /* Same typeface as the other app pages */
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+            transition: background-color .2s ease, color .2s ease;
+        }
+
+        /* Dark-mode surface overrides so Bootstrap cards and controls follow the theme. */
+        html[data-theme="dark"] .text-dark,
+        html[data-theme="dark"] .text-body,
+        html[data-theme="dark"] .text-secondary {
+            color: var(--text-secondary) !important;
+        }
+
+        html[data-theme="dark"] .bg-white {
+            background-color: var(--surface-input) !important;
+        }
+
+        html[data-theme="dark"] .border,
+        html[data-theme="dark"] .border-top,
+        html[data-theme="dark"] .border-bottom {
+            border-color: var(--border) !important;
+        }
+
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .apollo-navbar {
+            background: var(--surface) !important;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+        }
+
+        .apollo-navbar .nav-link {
+            color: var(--text-secondary);
+        }
+
+        html[data-theme="dark"] .apollo-navbar .nav-link:hover {
+            color: #ffffff;
+        }
+
+        .theme-toggle {
+            border: 1px solid var(--border) !important;
+            background: var(--surface-soft) !important;
+            color: var(--text-main) !important;
+        }
+
+        html[data-theme="dark"] .theme-toggle {
+            background: #252d36 !important;
+            color: #ffd37a !important;
+        }
+
+        .brand {
+            font-weight: 700;
+            letter-spacing: .2px;
+            color: var(--brand-dark);
+        }
+
+        .apollo-brand {
+            color: var(--text-main) !important;
+        }
+
+        .brand-accent {
+            color: var(--brand-orange);
+        }
+
+        .page-title {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .card {
+            background-color: var(--surface);
+            color: var(--text-main);
+   
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+            transition: background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
+        }
+
+        .card-body {
+            color: var(--text-main);
+        }
+
+        .stat-card {
+            min-height: 112px;
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 43, 96, 0.11);
+            color: var(--brand-orange);
+            font-size: 18px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .stat-value {
+            font-size: 27px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .search-wrap {
+            max-width: 430px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .table {
+            margin-bottom: 0;
+            min-width: 1080px;
+            color: var(--text-main);
+            --bs-table-bg: var(--surface);
+            --bs-table-color: var(--text-main);
+            --bs-table-hover-bg: var(--surface-soft);
+            --bs-table-hover-color: var(--text-main);
+        }
+
+        .table tbody tr {
+            background: var(--surface);
+            color: var(--text-main);
+        }
+
+        .table thead th {
+            background: var(--surface-soft);
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            font-size: 13px;
+            border-color: var(--row-border);
+        }
+
+        .table tbody tr:hover {
+            background: var(--surface-soft) !important;
+        }
+
+        .form-control,
+        .form-select,
+        .input-group-text {
+            background-color: var(--surface-input);
+            color: var(--text-main);
+            border-color: var(--border);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 1;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: var(--surface-input);
+            color: var(--text-main);
+            border-color: var(--brand-orange);
+            box-shadow: 0 0 0 .2rem rgba(245,130,32,.15);
+        }
+
+        .form-select option {
+            background: var(--surface);
+            color: var(--text-main);
+        }
+
+        .badge-blacklist {
+            background: rgba(245,130,32,.12);
+            color: #b45f0c;
+            border: 1px solid rgba(245,130,32,.22);
+            font-weight: 600;
+        }
+
+        .badge-deleted {
+            background: #eaf7ee;
+            color: #1d7a3c;
+            border: 1px solid #cdebd7;
+            font-weight: 600;
+        }
+
+        .muted {
+            color: var(--text-muted);
+        }
+
+        .email-text {
+            word-break: break-word;
+        }
+
+        .empty-state {
+            padding: 70px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 38px;
+            color: var(--icon-muted);
+            margin-bottom: 12px;
+        }
+
+        .pagination .page-link {
+            color: var(--text-main);
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .pagination .page-link:hover {
+            background: var(--surface-soft);
+            color: var(--text-main);
+            border-color: var(--border);
+        }
+
+        .pagination .active .page-link {
+            background: var(--brand-orange);
+            border-color: var(--brand-orange);
+            color: #fff;
+        }
+
+        .btn-brand {
+            background: var(--brand-orange);
+            border-color: var(--brand-orange);
+            color: #fff;
+        }
+
+        .btn-brand:hover,
+        .btn-brand:focus {
+            background: #df6f11;
+            border-color: #df6f11;
+            color: #fff;
+        }
+
+
+        html[data-theme="dark"] .workspace-chip {
+            background: rgba(245,130,32,.14) !important;
+            color: #ffd9b5 !important;
+            border-color: rgba(245,130,32,.25) !important;
+        }
+
+        html[data-theme="dark"] .logout-btn {
+            color: #f3f4f6 !important;
+            border-color: #48515e !important;
+        }
+
+        html[data-theme="dark"] .logout-btn:hover,
+        html[data-theme="dark"] .logout-btn:focus {
+            background: #2b333d !important;
+            color: #ffffff !important;
+        }
+
+        html[data-theme="dark"] .badge-blacklist {
+            color: #ffc47f;
+            background: rgba(245,130,32,.16);
+            border-color: rgba(245,130,32,.28);
+        }
+
+        html[data-theme="dark"] .badge-deleted {
+            color: #8fe0aa;
+            background: rgba(54, 160, 92, .16);
+            border-color: rgba(99, 196, 128, .28);
+        }
+
+        html[data-theme="dark"] .bg-light {
+            background-color: #2a323c !important;
+        }
+
+        html[data-theme="dark"] .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        html[data-theme="dark"] .navbar-toggler {
+            color: var(--text-main);
+        }
+
+        html[data-theme="dark"] .navbar-toggler-icon {
+            filter: invert(1) grayscale(1);
+        }
+
+        /* Highlight the currently open page in the navbar. */
+        .apollo-navbar .nav-link.active {
+            background: rgba(245, 130, 32, 0.12);
+            color: var(--brand-orange) !important;
+            font-weight: 700;
+            border-radius: 8px;
+        }
+
+        .apollo-navbar .nav-link.active i {
+            color: var(--brand-orange) !important;
+        }
+
+
+        body,
+        .apollo-navbar,
+        .card,
+        .card-body,
+        .table,
+        .table tbody tr,
+        .table thead th,
+        .form-control,
+        .form-select,
+        .input-group-text,
+        .pagination .page-link,
+        .workspace-chip,
+        .logout-btn {
+            transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+        }
+    </style>
+<link rel="stylesheet" href="/static/rocket-loader.css">
+<link rel="stylesheet" href="/static/email-progress.css">
+<link rel="stylesheet" href="/static/dark-theme.css">
+</head>
+
+<body>
+<script src="/static/rocket-loader.js"></script>
+<script src="/static/email-progress.js" defer></script>
+        
+{% include 'sidebar.html' %}
+<main class="app-main" id="appMain">
+
+ <div class="container-fluid app-content">
+        {% include 'navbar.html' %}
+
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+            <div>
+                <h1 class="page-title h3 mb-1">Blacklist &amp; Deleted Prospects</h1>
+                <p class="muted mb-0">
+                    Records removed from Prospect Results are kept here for blacklist and deletion history.
+                </p>
+            </div>
+
+            <div class="search-wrap w-100 w-lg-auto">
+                <label for="recordSearch" class="visually-hidden">Search records</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+                    </span>
+                    <input
+                        id="recordSearch"
+                        type="search"
+                        class="form-control"
+                        placeholder="Search name, email, company..."
+                        autocomplete="off"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+                <div class="card stat-card h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-ban"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">Total Blacklisted</div>
+                            <div class="stat-value" id="blacklistCount">{{ total_blacklisted }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="card stat-card h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </div>
+                        <div>
+                            <div class="stat-label">Deleted from Prospects</div>
+                            <div class="stat-value" id="deletedCount">{{ total_deleted }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-wrap">
+                    <table class="table table-hover align-middle" id="blacklistTable">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Title</th>
+                                <th>Company</th>
+                                <th>Domain</th>
+                                <th>Status</th>
+                                <th>Blacklisted At</th>
+                                <th>Deleted At</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody id="blacklistTableBody">
+                            {% for row in data %}
+                            {% set deletion_status = row.get("deletion_status", "") %}
+                            {% set is_deleted = deletion_status == "deleted" or (not deletion_status and row.get("blacklist_reason") == "Deleted by user from Prospect Results") %}
+                            <tr class="record-row">
+                                <td class="ps-3 row-number"></td>
+                                <td>
+                                    <div class="fw-semibold">{{ row.get("full_name") or "-" }}</div>
+                                    <div class="muted small">
+                                        {{ row.get("country") or "" }}
+                                    </div>
+                                </td>
+                                <td class="email-text">
+                                    {{ row.get("email") or row.get("blacklisted_email") or "-" }}
+                                </td>
+                                <td>{{ row.get("title") or "-" }}</td>
+                                <td>{{ row.get("company") or "-" }}</td>
+                                <td>{{ row.get("domain") or "-" }}</td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="badge rounded-pill badge-blacklist">
+                                            <i class="fa-solid fa-ban me-1"></i>
+                                            Blacklisted
+                                        </span>
+                                        {% if is_deleted %}
+                                        <span class="badge rounded-pill badge-deleted">
+                                            <i class="fa-solid fa-trash-can me-1"></i>
+                                            Deleted
+                                        </span>
+                                        {% else %}
+                                        <span class="badge rounded-pill bg-light text-secondary border">
+                                            Not Deleted
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ row.get("blacklisted_at") or "-" }}</td>
+                                <td>
+                                    {% if is_deleted %}
+                                        {{ row.get("deleted_at") or row.get("blacklisted_at") or "-" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="text-muted">
+                                        {{ row.get("blacklist_reason") or "-" }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if not data %}
+                <div class="empty-state" id="serverEmptyState">
+                    <i class="fa-regular fa-folder-open d-block"></i>
+                    <div class="fw-semibold mb-1">No blacklisted records found</div>
+                    <div>Deleted prospects will appear here after they are added to the blacklist.</div>
+                </div>
+                {% endif %}
+
+                <div
+                    id="clientEmptyState"
+                    class="empty-state d-none"
+                >
+                    <i class="fa-solid fa-magnifying-glass d-block"></i>
+                    <div class="fw-semibold mb-1">No matching records</div>
+                    <div>Try another name, email, company, or domain.</div>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 p-3 border-top">
+                    <div class="small muted" id="pageInfo"></div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="rowsPerPage" class="small muted mb-0">Rows</label>
+                        <select id="rowsPerPage" class="form-select form-select-sm" style="width: 88px;">
+                            <option value="10">10</option>
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+
+                        <nav aria-label="Blacklist pagination">
+                            <ul class="pagination pagination-sm mb-0" id="pagination"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+ <footer class="dashboard-footer">
+        <p class="mb-0">
+            Copyright © 2026
+            <a href="https://valasys.com/" target="_blank" rel="noopener">Valasys Media.</a>
+            All rights reserved.
+        </p>
+    </footer>
+    <script>
+        (() => {
+            const rows = Array.from(document.querySelectorAll(".record-row"));
+            const searchInput = document.getElementById("recordSearch");
+            const rowsPerPageSelect = document.getElementById("rowsPerPage");
+            const pageInfo = document.getElementById("pageInfo");
+            const pagination = document.getElementById("pagination");
+            const clientEmptyState = document.getElementById("clientEmptyState");
+            const serverEmptyState = document.getElementById("serverEmptyState");
+
+            let currentPage = 1;
+            let rowsPerPage = Number(rowsPerPageSelect.value);
+            let filteredRows = [...rows];
+
+            function getSearchText(row) {
+                return row.innerText.toLowerCase().replace(/\s+/g, " ").trim();
+            }
+
+            function render() {
+                rows.forEach(row => {
+                    row.style.display = "none";
+                });
+
+                const total = filteredRows.length;
+                const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
+
+                if (currentPage > totalPages) {
+                    currentPage = totalPages;
+                }
+
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = Math.min(start + rowsPerPage, total);
+
+                filteredRows.slice(start, end).forEach((row, index) => {
+                    row.style.display = "";
+                    row.querySelector(".row-number").textContent = start + index + 1;
+                });
+
+                const overallStart = total === 0 ? 0 : start + 1;
+                pageInfo.textContent = total === 0
+                    ? "0 records"
+                    : `Showing ${overallStart}-${end} of ${total} records`;
+
+                clientEmptyState.classList.toggle(
+                    "d-none",
+                    total !== 0
+                );
+
+                if (serverEmptyState) {
+                    serverEmptyState.classList.add("d-none");
+                }
+
+                renderPagination(totalPages);
+            }
+
+            function renderPagination(totalPages) {
+                pagination.innerHTML = "";
+
+                const addItem = (label, page, disabled = false, active = false) => {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "page-link";
+                    button.textContent = label;
+                    button.disabled = disabled;
+
+                    if (!disabled) {
+                        button.addEventListener("click", () => {
+                            currentPage = page;
+                            render();
+                        });
+                    }
+
+                    li.appendChild(button);
+                    pagination.appendChild(li);
+                };
+
+                addItem("«", 1, currentPage === 1);
+
+                const start = Math.max(1, currentPage - 2);
+                const end = Math.min(totalPages, currentPage + 2);
+
+                for (let page = start; page <= end; page++) {
+                    addItem(String(page), page, false, page === currentPage);
+                }
+
+                addItem("»", totalPages, currentPage === totalPages);
+            }
+
+            function applySearch() {
+                const query = searchInput.value.trim().toLowerCase();
+
+                filteredRows = query
+                    ? rows.filter(row => getSearchText(row).includes(query))
+                    : [...rows];
+
+                currentPage = 1;
+                render();
+            }
+
+            searchInput.addEventListener("input", applySearch);
+
+            rowsPerPageSelect.addEventListener("change", () => {
+                rowsPerPage = Number(rowsPerPageSelect.value);
+                currentPage = 1;
+                render();
+            });
+
+            render();
+        })();
+    </script>
+    <script>
+(function () {
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('apollo-theme');
+
+    function applyTheme(theme) {
+        root.setAttribute('data-theme', theme);
+        localStorage.setItem('apollo-theme', theme);
+        if (themeToggle) {
+            themeToggle.setAttribute(
+                'aria-label',
+                theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+            );
+            themeToggle.setAttribute(
+                'title',
+                theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+            );
+        }
+    }
+
+    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+            applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    }
+})();
+
+
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loader = document.getElementById("pageLoader");
+    if (!loader) return;
+
+    setTimeout(function () {
+        loader.classList.add("loader-hidden");
+
+        // Remove completely after fade animation
+        setTimeout(function () {
+            loader.remove();
+        }, 500);
+
+    }, 2000);
+
+});
+</script>
+<script src="/static/sidebar.js"></script>
+
+</body>
+</html>

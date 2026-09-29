@@ -1,0 +1,17 @@
+# Local secrets and sign-in tokens
+.env
+token_cache.bin
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Logs (contain prospect data)
+logs/
+*.log
+
+# PyInstaller build output (bundles the code, including old secrets)
+build/
+dist/

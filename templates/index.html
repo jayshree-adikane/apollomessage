@@ -1,0 +1,3303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Intelligence</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+    <link rel="stylesheet" href="../static/index.css">
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+
+
+<link rel="stylesheet" href="/static/rocket-loader.css">
+<link rel="stylesheet" href="/static/email-progress.css">
+<link rel="stylesheet" href="/static/dark-theme.css">
+</head>
+
+<body>
+<script src="/static/rocket-loader.js"></script>
+<script src="/static/email-progress.js" defer></script>
+  
+<!-- Bootstrap Toast Notifications -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000;">
+    <div id="apolloToast" class="toast border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex align-items-center">
+            <div id="apolloToastIcon" class="px-3 fs-5"></div>
+            <div id="apolloToastBody" class="toast-body fw-semibold flex-grow-1"></div>
+            <button type="button" class="btn-close me-2 m-auto btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+</div>
+
+
+{% include 'sidebar.html' %}
+
+<main class="app-main" id="appMain">
+    <div class="container-fluid app-content">
+        {% include 'navbar.html' %}
+
+    <!-- Dashboard Hero -->
+      
+    <div class="mb-4">
+        <div class="p-2 p-lg-3 rounded-4 shadow-sm hero-panel">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <div class="text-uppercase fw-semibold small hero-kicker mb-2">
+                        Prospect Discovery Workspace
+                    </div>
+                    <h1 class="fw-bold mb-2 hero-title">
+                        Discover Your Potential Clients
+                    </h1>
+                    <p class="text-secondary mb-0">
+                        Find qualified prospects, manage outreach, and track your email pipeline from one place.
+                    </p>
+                </div>
+                <div class="text-lg-end">
+                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Sales Intelligence
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refined Prospect Search -->
+    <section class="apollo-search-form card border-0 rounded-4 shadow-sm mb-4">
+        <div class="card-body p-3 p-md-4 p-xl-4">
+
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="apollo-section-icon">
+                        <i class="bi bi-person-lines-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="h5 fw-bold mb-1 apollo-form-title">Prospect Search</h2>
+                        <p class="small mb-0 apollo-form-subtitle">
+                            Set your search criteria and find new prospects from Sales Intelligence.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge rounded-pill apollo-form-badge px-3 py-2">
+                        <i class="bi bi-stars me-1"></i> Smart prospect discovery
+                    </span>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" id="searchForm">
+
+                <div class="row g-3">
+
+                    <!-- Job Titles -->
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="apollo-field-card h-100">
+                            <label for="job_titles" class="form-label apollo-form-label">
+                                <span class="apollo-field-icon"><i class="bi bi-briefcase-fill"></i></span>
+                                Job Titles
+                            </label>
+
+                            <input
+                                type="text"
+                                id="job_titles"
+                                name="job_titles"
+                                class="form-control apollo-clean-input"
+                                placeholder="e.g. Marketing Director"
+                                autocomplete="off"
+                            >
+
+                            <div class="apollo-field-help">
+                                Separate multiple titles with commas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Country -->
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="apollo-field-card h-100">
+                            <label for="country" class="form-label apollo-form-label">
+                                <span class="apollo-field-icon"><i class="bi bi-globe2"></i></span>
+                                Country
+                            </label>
+
+                            <input
+                                type="text"
+                                id="country"
+                                name="country"
+                                class="form-control apollo-clean-input"
+                                placeholder="e.g. United States"
+                                autocomplete="off"
+                            >
+
+                            <div class="apollo-field-help">
+                                Add countries separated by commas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Company -->
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="apollo-field-card h-100">
+                            <label for="companyName" class="form-label apollo-form-label">
+                                <span class="apollo-field-icon"><i class="bi bi-building-fill"></i></span>
+                                Company
+                            </label>
+
+                            <input
+                                type="text"
+                                id="companyName"
+                                name="company_name"
+                                class="form-control apollo-clean-input"
+                                placeholder="e.g. Microsoft"
+                                autocomplete="off"
+                            >
+
+                            <div class="apollo-field-help">
+                                Search one or more company names.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result limit -->
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="apollo-field-card h-100">
+                            <label for="limit" class="form-label apollo-form-label">
+                                <span class="apollo-field-icon"><i class="bi bi-list-ol"></i></span>
+                                Result Limit
+                            </label>
+
+                            <select name="limit" id="limit" class="form-select apollo-clean-input">
+                                <option value="10" selected>10 </option>
+                                <option value="20">20 </option>
+                                <option value="30">30 </option>
+                                <option value="40">40 </option>
+                                <option value="50">50 </option>
+                                <option value="60">60 </option>
+                                <option value="70">70 </option>
+                                <option value="80">80 </option>
+                                <option value="90">90 </option>
+                                <option value="100">100 </option>
+                            </select>
+
+                            <div class="apollo-field-help">
+                                Choose how many prospects to retrieve.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Company CSV -->
+                    <div class="col-12 col-xl-8">
+                        <div class="apollo-field-card apollo-csv-card h-100">
+                            <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                                <label class="form-label apollo-form-label mb-0">
+                                    <span class="apollo-field-icon">
+                                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                                    </span>
+                                    Company CSV
+                                    <span class="apollo-optional">(optional)</span>
+                                </label>
+
+                                <span class="apollo-csv-status" id="csvStatusBadge">
+                                    <i class="bi bi-file-earmark me-1"></i>
+                                    No file selected
+                                </span>
+                            </div>
+
+                            <div class="apollo-upload-trigger"
+                                 id="companyUploadZone"
+                                 role="button"
+                                 tabindex="0"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#csvUploadModal">
+                                <div class="apollo-upload-trigger-icon">
+                                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                                </div>
+
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="apollo-upload-trigger-title">
+                                        Upload company list
+                                    </div>
+                                    <div class="apollo-upload-trigger-subtitle">
+                                        Click to open the CSV upload window
+                                    </div>
+                                </div>
+
+                                <span class="btn btn-sm apollo-upload-open-btn">
+                                    <i class="bi bi-upload me-1"></i>
+                                    Upload CSV
+                                </span>
+                            </div>
+
+                            <div class="apollo-csv-selected d-none" id="csvSelectedSummary">
+                              
+                                <div class="min-w-0 flex-grow-1">
+                                    <div class="apollo-csv-selected-name text-truncate"
+                                         id="csvFileText">
+                                        company-list.csv
+                                    </div>
+                                    <small class="apollo-csv-selected-help">
+                                        CSV ready for prospect search
+                                    </small>
+                                </div>
+                                <button
+                                    type="button"
+                                    id="csvRemoveBtn"
+                                    class="btn apollo-upload-remove"
+                                    onclick="removeCsvFile(event)"
+                                    aria-label="Remove CSV"
+                                    title="Remove CSV">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+
+                            <input
+                                type="file"
+                                id="companyCsv"
+                                name="company_csv"
+                                accept=".csv"
+                                class="d-none"
+                            >
+                        </div>
+                    </div>
+
+
+                    <!-- CSV Upload Modal -->
+                    <div class="modal fade" id="csvUploadModal" tabindex="-1"
+                         aria-labelledby="csvUploadModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content apollo-csv-modal">
+                                <div class="modal-header sales-intelligence-csv-modal-header">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="apollo-csv-modal-icon">
+                                            <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="modal-title fw-bold mb-1" id="csvUploadModalLabel">
+                                                Upload Company CSV
+                                            </h5>
+                                            <div class="small text-secondary">
+                                                Add a list of company names for bulk prospect discovery.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body p-4">
+                                    <div class="apollo-modal-dropzone"
+                                         id="csvDropZone"
+                                         role="button"
+                                         tabindex="0">
+                                        <div class="apollo-modal-upload-icon">
+                                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                                        </div>
+
+                                        <h6 class="fw-bold mb-1">Drop your CSV here</h6>
+                                        <p class="small text-secondary mb-3">
+                                            or choose a file from your computer
+                                        </p>
+
+                                        <button type="button"
+                                                class="btn btn-sm apollo-modal-browse-btn"
+                                                id="csvBrowseBtn">
+                                            <i class="bi bi-folder2-open me-1"></i>
+                                            Browse CSV
+                                        </button>
+
+                                        <div class="small text-secondary mt-3">
+                                            Accepted format: <strong>.csv</strong>
+                                            <span class="mx-1">•</span>
+                                            Recommended: company names in one column
+                                        </div>
+                                    </div>
+
+                                    <div class="apollo-upload-preview d-none mt-4"
+                                         id="csvUploadPreview">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="apollo-preview-file-icon">
+                                                <i class="bi bi-filetype-csv"></i>
+                                            </div>
+
+                                            <div class="flex-grow-1 min-w-0">
+                                                <div class="fw-bold text-truncate"
+                                                     id="csvPreviewName">
+                                                    company-list.csv
+                                                </div>
+                                                <small class="text-secondary" id="csvPreviewMeta">
+                                                    CSV selected
+                                                </small>
+                                            </div>
+
+                                            <span class="badge rounded-pill apollo-ready-badge">
+                                                <i class="bi bi-check-circle-fill me-1"></i>
+                                                Ready
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer apollo-csv-modal-footer">
+                                    <button type="button"
+                                            class="btn btn-light border rounded-3"
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn apollo-primary-btn rounded-3 px-4"
+                                            id="csvUseFileBtn"
+                                            disabled>
+                                        <i class="bi bi-check2-circle me-1"></i>
+                                        Use This File
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+
+                    <div class="col-12 col-xl-4">
+                        <div class="apollo-search-action h-100">
+                            <div class="apollo-search-action-content">
+                                <div class="small text-secondary mb-2">
+                                    Ready to discover your next prospects?
+                                </div>
+
+                                <div class="apollo-search-credit-row">
+                                    <button
+                                        type="submit"
+                                        id="searchBtn"
+                                        class="btn apollo-primary-btn apollo-search-main-btn">
+                                        <span class="search-text">
+                                            <i class="bi bi-search me-2"></i>
+                                            Search Prospects
+                                        </span>
+
+                                        <span
+                                            class="search-spinner spinner-border spinner-border-sm d-none"
+                                            role="status"
+                                            aria-hidden="true">
+                                        </span>
+                                    </button>
+
+                                    <div class="apollo-credit-card" id="apolloCreditCard"
+                                         title="Apollo lead credits">
+                                        <div class="apollo-credit-icon">
+                                            <i class="bi bi-lightning-charge-fill"></i>
+                                        </div>
+                                        <div class="apollo-credit-content">
+                                            <div class="apollo-credit-title">Apollo Credits</div>
+                                            <div class="apollo-credit-values">
+                                                <span><strong id="apolloCreditTotal">--</strong><small>Total</small></span>
+                                                <span><strong id="apolloCreditUsed">--</strong><small>Used</small></span>
+                                                <span><strong id="apolloCreditRemaining">--</strong><small>Remaining</small></span>
+                                            </div>
+                                            <div class="apollo-credit-status" id="apolloCreditStatus">Loading...</div>
+                                        </div>
+                                        <button type="button" class="apollo-credit-refresh"
+                                                id="apolloCreditRefresh"
+                                                aria-label="Refresh Apollo credits"
+                                                title="Refresh Apollo credits">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Find Prospects Faster -->
+
+
+    <section class="prospect-search-section" aria-label="Find prospects faster">
+        <div class="prospect-search-header">
+            <div class="prospect-search-heading">
+                <span class="prospect-search-icon">
+                    <i class="bi bi-search"></i>
+                </span>
+                <div>
+                    <h2>Find prospects faster</h2>
+                    <p>Search your prospect database instantly or refine the results by date.</p>
+                </div>
+            </div>
+
+            <span class="prospect-record-badge">
+                <i class="bi bi-database-fill me-1"></i>
+                <span id="searchRecordCount">{{ data|length if data else 0 }}</span> prospects
+            </span>
+        </div>
+
+        <div class="prospect-search-body">
+            <div class="input-group prospect-search-input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search fs-5"></i>
+                </span>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="searchInput"
+                    placeholder="Search by name, email, company, title or country..."
+                    oninput="searchTable()"
+                    autocomplete="off"
+                    aria-label="Search prospects"
+                >
+
+                <button
+                    type="button"
+                    class="btn prospect-search-clear"
+                    id="clearSearchBtn"
+                    onclick="clearSmartSearch()"
+                    aria-label="Clear prospect search"
+                    title="Clear search">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div class="prospect-search-tools">
+                <div class="prospect-search-hint">
+                    <i class="bi bi-lightning-charge-fill me-1"></i>
+                    Live search is active — results update while you type.
+                </div>
+
+                <div class="prospect-filter-actions">
+                    <button
+                        class="btn btn-brand-outline"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#advancedDateFilter"
+                        aria-expanded="{% if from_date or to_date %}true{% else %}false{% endif %}"
+                        aria-controls="advancedDateFilter">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        Date Filter
+                    </button>
+
+                    <button
+                        class="btn btn-light border"
+                        type="button"
+                        onclick="clearSmartSearch(); resetFilter();">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="search-metrics">
+                <div class="search-metric">
+                    <span class="search-metric-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <div class="metric-value" id="matchingProspects">{{ data|length if data else 0 }}</div>
+                        <div class="metric-label">Matching prospects</div>
+                    </div>
+                </div>
+
+                <div class="search-metric">
+                    <span class="search-metric-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <div class="metric-value">Live</div>
+                        <div class="metric-label">Instant filtering</div>
+                    </div>
+                </div>
+
+                <div class="search-metric">
+                    <span class="search-metric-icon">
+                        <i class="bi bi-calendar-range"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <div class="metric-value">
+                            {% if from_date or to_date %}Filtered{% else %}All dates{% endif %}
+                        </div>
+                        <div class="metric-label">Date scope</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapse {% if from_date or to_date %}show{% endif %}" id="advancedDateFilter">
+                <div class="prospect-filter-advanced">
+                    <form method="POST" class="row g-3 align-items-end">
+                        <div class="col-12 col-md-5">
+                            <label for="from_date" class="form-label">
+                                <i class="bi bi-calendar-event me-1" style="color:var(--brand-orange);"></i>
+                                From date
+                            </label>
+                            <input
+                                type="date"
+                                id="from_date"
+                                name="from_date"
+                                value="{{ from_date or '' }}"
+                                class="form-control"
+                            >
+                        </div>
+
+                        <div class="col-12 col-md-5">
+                            <label for="to_date" class="form-label">
+                                <i class="bi bi-calendar-check me-1" style="color:var(--brand-orange);"></i>
+                                To date
+                            </label>
+                            <input
+                                type="date"
+                                id="to_date"
+                                name="to_date"
+                                value="{{ to_date or '' }}"
+                                class="form-control"
+                            >
+                        </div>
+
+                        <div class="col-12 col-md-2 d-grid">
+                            <button type="submit" class="btn btn-brand rounded-3">
+                                <i class="bi bi-funnel-fill me-1"></i>
+                                Apply
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if from_date or to_date %}
+                    <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+                        <span class="filter-pill">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            Active date range:
+                            {% if from_date and to_date %}
+                                {{ from_date }} → {{ to_date }}
+                            {% elif from_date %}
+                                From {{ from_date }}
+                            {% elif to_date %}
+                                Through {{ to_date }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+
+    {% if data %}
+    <div class="stats-card">
+        <div class="stat-item">
+            <span class="stat-number">{{ data|length }}</span>
+            <span class="stat-label">Total Prospects</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">{{ data|selectattr('email')|list|length }}</span>
+            <span class="stat-label">With Email</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">{{ data|selectattr('linkedin')|list|length }}</span>
+            <span class="stat-label">With LinkedIn</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Total Prospects</span>
+            <span class="stat-number" id="selectedCount">0</span>
+            <span class="stat-label">Selected</span>
+        </div>
+    </div>
+
+    <!-- Email Actions Bar -->
+    <div class="email-actions">
+        <div class="selection-info">
+            <div class="selection-count">
+                <i class="fas fa-check-square"></i>
+                <span id="selectionText">No prospects selected</span>
+            </div>
+        </div>
+        <div class="action-buttons">
+           
+           
+
+            <button class="btn btn-secondary" onclick="selectAll()">
+                <i class="fas fa-check-double"></i>
+                Select All
+            </button>
+            <button class="btn btn-outline-secondary" onclick="clearAll()">
+        <i class="fas fa-times"></i>
+        Clear All
+    </button>
+
+            <button class="btn btn-success" onclick="exportToCSV()">
+                <i class="fas fa-download"></i>
+                Export CSV
+            </button>
+            <button class="btn btn-outline-danger" id="blacklistBtn" onclick="blacklistSelected()" disabled>
+                <i class="fas fa-trash-alt"></i>
+                Delete & Blacklist
+            </button>
+            <button class="btn btn-danger" id="sendEmailBtn" onclick="openEmailModal()" disabled>
+                <i class="fas fa-envelope"></i>
+                Send Email
+            </button>
+            
+            
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Results Table -->
+    <div class="table-card table-shell">
+        <div class="table-topbar d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 px-3 px-md-4 py-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="table-accent"></span>
+                <div>
+                    <h2 class="h5 fw-bold mb-0">
+                        <i class="bi bi-table me-2" style="color:var(--valasys-orange);"></i>
+                        Prospect Results
+                    </h2>
+                    <small class="text-secondary">Responsive, searchable prospect database</small>
+                </div>
+            </div>
+            <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                <i class="bi bi-database me-1" style="color:var(--valasys-orange);"></i>
+                {{ data|length if data else 0 }} records
+            </span>
+        </div>
+
+        {% if data %}
+      
+<div class="table-responsive">
+    <table id="dataTable"
+           class="table table-hover table-striped align-middle mb-0 display nowrap"
+           style="width:100%;">
+
+        <thead>
+            <tr>
+                <th style="width:40px;">
+                    <input type="checkbox"
+                           id="selectAllCheckbox"
+                           onchange="toggleSelectAll(this)">
+                </th>
+
+                <th>Extracted Date</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Title</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>LinkedIn</th>
+                <th>Country</th>
+                <th>Company</th>
+                <th>Website</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in data %}
+            <tr class="data-row">
+
+                <!-- Checkbox -->
+                <td class="checkbox-cell">
+                    {% if row.email %}
+                    <input
+                        type="checkbox"
+                        class="prospect-checkbox"
+                        data-email="{{ row.email }}"
+                        data-firstname="{{ row.first_name or '' }}"
+                        data-title="{{ row.title or '' }}"
+                        data-company="{{ row.company or '' }}"
+                        onchange="updateSelection()"
+                    >
+                    {% endif %}
+                </td>
+
+                <!-- Extracted Date -->
+                <td>
+                    <div class="badge rounded-pill text-bg-light border fw-semibold">
+                        {{ row.extracted_date or '-' }}
+                    </div>
+                </td>
+
+                <!-- First Name -->
+                <td>{{ row.first_name or '-' }}</td>
+
+                <!-- Last Name -->
+                <td>{{ row.last_name or '-' }}</td>
+
+                <!-- Title -->
+                <td>{{ row.title or '-' }}</td>
+
+                <!-- Email -->
+                <td>{{ row.email or '-' }}</td>
+
+                <!-- Status -->
+                <td>
+                    {% if row.email_delivery_status in [
+                        'failed',
+                        'smtp_failed',
+                        'bounced',
+                        'quarantined',
+                        'undeliverable'
+                    ] %}
+
+                        <span class="status-pill failed"
+                              title="{{ row.email_error or 'Email delivery failed' }}">
+
+                            <i class="fas fa-times-circle"></i>
+
+                            {% if row.email_failure_type == 'undeliverable' %}
+                                Mail Undeliverable
+                            {% else %}
+                                Mail Failed
+                            {% endif %}
+
+                        </span>
+
+                        {% if row.email_failure_type == 'undeliverable' %}
+
+                            <div class="mt-1"
+                                 style="
+                                    font-size:11px;
+                                    line-height:1.35;
+                                    white-space:normal;
+                                    min-width:240px;
+                                    max-width:360px;
+                                 ">
+
+                                <div class="fw-semibold text-danger">
+                                    <i class="fas fa-user-slash me-1"></i>
+                                    Undeliverable Address:
+                                    {{ row.undeliverable_address or row.email or '-' }}
+                                </div>
+
+                                {% if row.email_error %}
+                                    <div class="text-danger-emphasis mt-1">
+                                        {{ row.email_error }}
+                                    </div>
+                                {% endif %}
+
+                            </div>
+
+                        {% elif row.email_error %}
+
+                            <div class="mt-1 text-danger"
+                                 style="
+                                    font-size:11px;
+                                    line-height:1.35;
+                                    white-space:normal;
+                                    max-width:360px;
+                                 ">
+                                {{ row.email_error }}
+                            </div>
+
+                        {% endif %}
+
+                    {% elif row.email %}
+
+                        <span class="status-pill success">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Verified
+                        </span>
+
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <!-- LinkedIn -->
+                <td>
+                    {% if row.linkedin %}
+                        <a href="{{ row.linkedin }}"
+                           target="_blank"
+                           class="bootstrap-table-link">
+                            <i class="fab fa-linkedin"></i>
+                            View
+                        </a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <!-- Country -->
+                <td>{{ row.country or '-' }}</td>
+
+                <!-- Company -->
+                <td>{{ row.company or '-' }}</td>
+
+                <!-- Website -->
+                <td>
+                    {% if row.website %}
+                        <a href="{{ row.website }}"
+                           target="_blank"
+                           class="bootstrap-table-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            Visit
+                        </a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+
+
+        <!-- Bootstrap DataGrid Pagination -->
+      
+
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-search"></i>
+            <p>No records found. Search prospects to display data.</p>
+        </div>
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- Dashboard Footer -->
+    <footer class="dashboard-footer">
+        <p class="mb-0">
+            Copyright © 2026
+            <a href="https://valasys.com/" target="_blank" rel="noopener">Valasys Media.</a>
+            All rights reserved.
+        </p>
+    </footer>
+
+</div>
+</main>
+
+<!-- Delete & Blacklist Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-0 pb-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fef2f2;color:#b91c1c;">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-1" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                        <div class="small text-secondary">Delete the selected prospects and add them to the blacklist.</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-2">
+                <p class="mb-2">Are you sure you want to delete the selected record(s)?</p>
+                <div class="alert alert-warning border-0 rounded-3 mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Deleted records will be moved to the <strong>Blacklist</strong> collection and will not appear in Prospect Results or future searches.
+                </div>
+                <div class="small text-secondary mt-3">Selected: <strong id="deleteConfirmCount">0</strong> prospect(s)</div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light border rounded-3 px-4" data-bs-dismiss="modal">
+                    No
+                </button>
+                <button type="button" class="btn btn-danger rounded-3 px-4" id="confirmDeleteBlacklistBtn" onclick="confirmBlacklistDelete()">
+                    <i class="fas fa-trash-alt me-1"></i> Yes, Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Modal -->
+<div id="emailModal" class="modal email-compose-modal">
+    <div class="modal-content email-compose-modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-paper-plane"></i> Compose Email</h2>
+            <span class="close" onclick="closeEmailModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="emailForm" data-no-loader>
+                <div class="seq-heading">
+                    <div>
+                        <label style="margin:0;">
+                            <i class="fas fa-layer-group"></i>
+                            Email Sequence
+                        </label>
+                        <div class="seq-heading-note">
+                            Edit the initial email and all 5 follow-ups on one page. Edited follow-ups are saved for
+                            <strong id="seqSelectedCount">all selected</strong> prospect(s) when you send or queue.
+                        </div>
+                    </div>
+                    <span id="followupActivityLoading" class="seq-loading" style="display:none;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading sequence...
+                    </span>
+                </div>
+
+                <!-- Initial email -->
+                <div class="seq-card seq-card-initial" data-sequence="0">
+                    <div class="seq-card-header">
+                        <span class="seq-step">Send Email</span>
+                        <span class="seq-badge" id="seqBadge0">Initial</span>
+                    </div>
+
+                    <label for="emailSubject" class="seq-field-label">
+                        <i class="fas fa-heading"></i>
+                        Subject Line
+                    </label>
+                    <input
+                        type="text"
+                        id="emailSubject"
+                        name="subject"
+                        class="form-control"
+                        placeholder="A smarter way to capture in-market demand for {company}"
+                        value="A smarter way to capture in-market demand for {company}"
+                        oninput="updateFollowupSubjects()"
+                        required
+                    >
+                    <small class="seq-hint">Use {company}, {first_name}, {title} as placeholders</small>
+
+                    <label for="emailBody" class="seq-field-label" style="margin-top:12px;">
+                        <i class="fas fa-align-left"></i>
+                        Email Body
+                    </label>
+                    <div id="emailBodyEditor">
+                        <p>Hello {first_name},</p>
+                        <p>{company_about}</p>
+                        <p>Quick question: how does your team currently spot accounts researching solutions like yours, before they land on your site or a competitor's?</p>
+                        <p>We turn real-time intent signals into <b>HQL, BANT-qualified leads</b> - so outreach hits accounts already in-market, not after they've decided.</p>
+                        <p>I can show you the list of companies currently researching solutions like {company}'s, and how we convert that into sales-ready leads for your team.</p>
+                        <p><b>Happy to share the list first, worth a look before we jump on a call?</b></p>
+                    </div>
+                </div>
+
+                <!-- Follow-ups #1-#5 -->
+                <div class="seq-followup-grid" id="followupGrid">
+                    <!-- Cards are rendered by renderFollowupCards() -->
+                </div>
+                <small class="seq-hint">
+                    Follow-up placeholders: {first_name}, {company}, {title}, {website}. Follow-ups are sent in the same thread as the initial email.
+                </small>
+
+                <hr style="margin:25px 0;">
+
+                
+                        
+                        <div id="followupActivityList" style="display:none;"></div>
+                
+
+              
+                    <div
+                    id="signaturePreview"
+                    style="
+                    padding:15px;
+                    background:#fafafa;
+                    border:1px solid #ddd;
+                    border-radius:8px;
+                    ">
+
+                    <img src="/static/regards.png" width="200">
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+
+                    <tr>
+
+                    <td width="80" style="position: relative;top: -9em;">
+
+                    <img src="/static/logo.png" width="120">
+
+                    </td>
+
+                    <td>
+
+                    <div style="font-family:Arial,sans-serif;font-size:10.5px;line-height:1.5;">
+
+                    <span style="color:#f58220;font-size:25px;font-weight:bold;">
+                    Rameshwar Thakur
+                    </span><br>
+                    <b>Sales Lead – Valasys Media</b>
+                    <hr>
+                    <b style="color:#f58220;">Phone</b>
+                    995-3216-767
+                    &nbsp;
+                    <b style="color:#f58220;">Website</b>
+                    valasys.com
+                    <br>
+                    <b style="color:#f58220;">Email</b>
+                    rameshwar@valasys.com
+                    <br>
+                    <b style="color:#f58220;">Address</b>
+                    Office 801, 8th Floor, Cerebrum IT Park- B3, Kalyani Nagar, Pune, 411014
+                    <br><br>
+                    <img src="/static/pinterest.png" width="30">
+                    <img src="/static/youtube.png" width="30">
+                    <img src="/static/facebook.png" width="30">
+                    <img src="/static/instagram.png" width="30">
+                    <img src="/static/linkedin.png" width="30">
+                    <img src="/static/x.png" width="30">
+
+                    <br><br>
+
+                    <img src="/static/awards.png" width="800" style="position: relative;left: -9em;">
+
+                    </div>
+
+                    </td>
+
+                    </tr>
+
+                    </table>
+
+                    </div>
+                    <small style="color: #718096; margin-top: 5px; display: block;">
+                        Use {company}, {first_name}, {title} as placeholders
+                    </small>
+               
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeEmailModal()">
+                <i class="fas fa-times"></i>
+                Cancel
+            </button>
+            <button class="btn-send" id="sendBtn" onclick="sendEmails()">
+                <span class="btn-text">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Emails
+                </span>
+                <div class="spinner"></div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==========================================================
+    // Dynamic Bootstrap DataGrid pagination
+    // ==========================================================
+    let currentPage = 1;
+    let rowsPerPage = 15;
+    let allRows = [];
+    let filteredRows = [];
+
+    // #dataTable is paged by DataTables. The row-hiding pagination below is
+    // only a fallback for when DataTables is not initialised; hiding rows with
+    // display:none while DataTables pages them left pages 2+ empty.
+    function getProspectTable() {
+        if (window.jQuery && $.fn.dataTable && $.fn.dataTable.isDataTable('#dataTable')) {
+            return $('#dataTable').DataTable();
+        }
+        return null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        allRows = Array.from(document.querySelectorAll('.data-row'));
+        filteredRows = [...allRows];
+
+        const rowsSelect = document.getElementById('rowsPerPage');
+        if (rowsSelect) {
+            rowsSelect.addEventListener('change', function() {
+                rowsPerPage = parseInt(this.value, 10) || 15;
+                showPage(1);
+            });
+        }
+
+        showPage(1);
+    });
+
+    function clearSmartSearch() {
+        const input = document.getElementById('searchInput');
+
+        if (input) {
+            input.value = '';
+            searchTable();
+            input.focus();
+        }
+    }
+
+    function updateSearchCounters() {
+        const count = filteredRows.length;
+
+        const totalRows = document.getElementById('totalRows');
+        const matchingProspects = document.getElementById('matchingProspects');
+        const searchRecordCount = document.getElementById('searchRecordCount');
+
+        if (totalRows) totalRows.textContent = count;
+        if (matchingProspects) matchingProspects.textContent = count;
+        if (searchRecordCount) searchRecordCount.textContent = count;
+    }
+
+    // Search function
+    function searchTable() {
+        const input = document.getElementById('searchInput');
+
+        if (!input) return;
+
+        const filter = input.value.trim().toLowerCase();
+
+        const table = getProspectTable();
+        if (table) {
+            table.search(filter).draw();
+            filteredRows = table.rows({ search: 'applied' }).nodes().toArray();
+            updateSearchCounters();
+            updateSelection();
+            return;
+        }
+
+        filteredRows = allRows.filter(row => {
+            return row.textContent.toLowerCase().includes(filter);
+        });
+
+        currentPage = 1;
+        updateSearchCounters();
+        showPage(1);
+    }
+
+    function showPage(page) {
+        const table = getProspectTable();
+        if (table) {
+            allRows.forEach(row => {
+                row.style.display = '';
+            });
+            table.draw(false);
+            filteredRows = table.rows({ search: 'applied' }).nodes().toArray();
+            updateSearchCounters();
+            updateSelection();
+            return;
+        }
+
+        const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
+
+        currentPage = Math.min(Math.max(page, 1), totalPages);
+
+        allRows.forEach(row => {
+            row.style.display = 'none';
+        });
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = Math.min(start + rowsPerPage, filteredRows.length);
+
+        filteredRows.slice(start, end).forEach(row => {
+            row.style.display = '';
+        });
+
+        const showingStart = filteredRows.length ? start + 1 : 0;
+        const showingEnd = filteredRows.length ? end : 0;
+
+        const showingStartEl = document.getElementById('showingStart');
+        const showingEndEl = document.getElementById('showingEnd');
+
+        if (showingStartEl) showingStartEl.textContent = showingStart;
+        if (showingEndEl) showingEndEl.textContent = showingEnd;
+
+        updateSearchCounters();
+        generatePagination();
+        updateSelection();
+    }
+
+    function createPaginationItem(label, page, options = {}) {
+        const {
+            active = false,
+            disabled = false,
+            ellipsis = false,
+            ariaLabel = label,
+            icon = ''
+        } = options;
+
+        const li = document.createElement('li');
+        li.className = 'page-item';
+
+        if (active) li.classList.add('active');
+        if (disabled) li.classList.add('disabled');
+        if (ellipsis) li.classList.add('ellipsis');
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'page-link';
+        button.setAttribute('aria-label', ariaLabel);
+
+        if (active) {
+            button.setAttribute('aria-current', 'page');
+        }
+
+        if (icon) {
+            button.innerHTML = `<i class="${icon}"></i>`;
+        } else {
+            button.textContent = label;
+        }
+
+        if (!disabled && !ellipsis && typeof page === 'number') {
+            button.addEventListener('click', function() {
+                showPage(page);
+            });
+        }
+
+        li.appendChild(button);
+        return li;
+    }
+
+    function generatePagination() {
+        const paginationContainer = document.getElementById('paginationButtons');
+
+        if (!paginationContainer) return;
+
+        paginationContainer.innerHTML = '';
+
+        if (filteredRows.length === 0) {
+            paginationContainer.style.display = 'none';
+            return;
+        }
+
+        paginationContainer.style.display = 'flex';
+
+        const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+        // Previous
+        paginationContainer.appendChild(
+            createPaginationItem('', currentPage - 1, {
+                disabled: currentPage === 1,
+                ariaLabel: 'Previous page',
+                icon: 'bi bi-chevron-left'
+            })
+        );
+
+        // Page number algorithm:
+        // 1 2 3 4 5 ... 20
+        // 1 ... 8 9 10 11 12 ... 20
+        // 1 ... 16 17 18 19 20
+        const pages = [];
+
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else if (currentPage <= 4) {
+            pages.push(1, 2, 3, 4, 5, 'ellipsis', totalPages);
+        } else if (currentPage >= totalPages - 3) {
+            pages.push(1, 'ellipsis', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        } else {
+            pages.push(1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', totalPages);
+        }
+
+        pages.forEach(item => {
+            if (item === 'ellipsis') {
+                paginationContainer.appendChild(
+                    createPaginationItem('…', null, {
+                        disabled: true,
+                        ellipsis: true,
+                        ariaLabel: 'More pages'
+                    })
+                );
+            } else {
+                paginationContainer.appendChild(
+                    createPaginationItem(
+                        String(item),
+                        item,
+                        {
+                            active: item === currentPage,
+                            ariaLabel: `Page ${item}`
+                        }
+                    )
+                );
+            }
+        });
+
+        // Next
+        paginationContainer.appendChild(
+            createPaginationItem('', currentPage + 1, {
+                disabled: currentPage === totalPages,
+                ariaLabel: 'Next page',
+                icon: 'bi bi-chevron-right'
+            })
+        );
+    }
+
+    // Loading state for search
+    const form = document.getElementById('searchForm');
+    const searchBtn = document.getElementById('searchBtn');
+
+    form.addEventListener('submit', function() {
+        searchBtn.classList;
+        searchBtn.classList.add('loading');
+        searchBtn.disabled = true;
+    });
+
+    // Reset filter
+    function resetFilter() {
+        window.location.href = '/';
+    }
+
+    // Get only the profiles currently visible after search + pagination
+    function getVisibleCheckboxes() {
+        const table = getProspectTable();
+        if (table) {
+            return table.rows({ page: 'current', search: 'applied' }).nodes().toArray()
+                .map(row => row.querySelector('.prospect-checkbox'))
+                .filter(cb => cb);
+        }
+
+        return filteredRows
+            .filter(row => row.style.display !== 'none')
+            .map(row => row.querySelector('.prospect-checkbox'))
+            .filter(cb => cb);
+    }
+
+    // DataTables keeps only the current page's rows in the DOM, so
+    // document.querySelectorAll() misses selections made on other pages.
+    function getAllProspectCheckboxes() {
+        const table = getProspectTable();
+        if (table) {
+            return table.rows().nodes().toArray()
+                .map(row => row.querySelector('.prospect-checkbox'))
+                .filter(cb => cb);
+        }
+        return Array.from(document.querySelectorAll('.prospect-checkbox'));
+    }
+
+    function getCheckedProspectCheckboxes() {
+        return getAllProspectCheckboxes().filter(cb => cb.checked);
+    }
+
+    // Header checkbox reflects only the rows on the current page.
+    function syncHeaderCheckbox() {
+        const header = document.getElementById('selectAllCheckbox');
+        if (!header) return;
+
+        const pageBoxes = getVisibleCheckboxes();
+        const checkedOnPage = pageBoxes.filter(cb => cb.checked).length;
+
+        header.checked = pageBoxes.length > 0 && checkedOnPage === pageBoxes.length;
+        header.indeterminate = checkedOnPage > 0 && checkedOnPage < pageBoxes.length;
+    }
+
+    // Selection Management
+    function updateSelection() {
+        const checkboxes = getCheckedProspectCheckboxes();
+        const count = checkboxes.length;
+        
+        document.getElementById('selectedCount').textContent = count;
+        document.getElementById('selectionText').textContent = 
+            count === 0 ? 'No prospects selected' : 
+            count === 1 ? '1 prospect selected' : 
+            `${count} prospects selected`;
+        
+        document.getElementById('sendEmailBtn').disabled = count === 0;
+
+        const blacklistBtn = document.getElementById('blacklistBtn');
+        if (blacklistBtn) {
+            blacklistBtn.disabled = count === 0;
+        }
+
+        const queueBtn = document.getElementById('queueEmailBtn');
+        if (queueBtn) queueBtn.disabled = count === 0;
+
+        syncHeaderCheckbox();
+    }
+
+    // Select All
+    function selectAll() {
+        const checkboxes = getVisibleCheckboxes();
+
+        checkboxes.forEach(cb => cb.checked = true);
+
+        document.getElementById('selectAllCheckbox').checked = true;
+
+        updateSelection();
+    }
+
+
+    function clearAll() {
+        getAllProspectCheckboxes().forEach(cb => {
+            cb.checked = false;
+        });
+
+        updateSelection();
+    }
+
+    // Toggle Select All from header checkbox
+    function toggleSelectAll(checkbox) {
+        const checkboxes = getVisibleCheckboxes();
+
+        checkboxes.forEach(cb => {
+            cb.checked = checkbox.checked;
+        });
+
+        updateSelection();
+    }
+    // Email Modal Functions
+
+    const signature = `
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,sans-serif;font-size:14px;">
+
+        <tr>
+        <td colspan="2" style="padding-bottom:12px;">
+        <img src="cid:regards" width="100" style="display:block;">
+        </td>
+        </tr>
+
+        <tr>
+
+        <td width="92" valign="top" style="padding-top:25px;">
+
+            <a href="https://valasys.com">
+                <img src="cid:logo"
+                    width="100"
+                    style="display:block;">
+            </a>
+
+        </td>
+
+        <td valign="top" style="padding-left:18px;">
+
+        <div style="
+        font-size:15px;
+        font-weight:bold;
+        color:#f58220;
+        line-height:1;
+        ">
+        Rameshwar Thakur
+        </div>
+
+        <div style="
+        font-size:15px;
+        font-weight:bold;
+        color:#333;
+        margin-top:6px; 
+        ">
+        Sales Lead – Valasys Media
+        </div>
+
+        <div style="
+        height:3px;
+        background:#f58220;
+        margin:14px 0 12px 0;
+        width:745px;
+        ">
+        </div>
+
+        <table cellpadding="0" cellspacing="0" border="0"
+            style="font-size:12px; line-height:1.8; color:#333;">
+
+            <!-- Phone + Website -->
+            <tr>
+                <td>
+                    <span style="color:#f58220;">Phone</span>
+                    <a href="tel:995-3216-767"
+                    style="color:#555;text-decoration:none;margin-left:6px;">
+                        995-3216-767
+                    </a>
+
+                    <span style="display:inline-block;width:24px;"></span>
+
+                    <span style="color:#f58220;">Website</span>
+                    <a href="https://valasys.com"
+                    style="color:#555;text-decoration:underline;margin-left:6px;">
+                        valasys.com
+                    </a>
+                </td>
+            </tr>
+
+            <!-- Email -->
+            <tr>
+                <td>
+                    <span style="color:#f58220;">Email</span>
+                    <a href="mailto:rameshwar@valasys.com"
+                    style="color:#555;text-decoration:underline;margin-left:6px;">
+                        rameshwar@valasys.com
+                    </a>
+                </td>
+            </tr>
+
+            <!-- Address -->
+            <tr>
+                <td>
+                    <span style="color:#f58220;">Address</span>
+                    <span style="margin-left:6px;">
+                        Office 801, 8th Floor, Cerebrum IT Park- B3,
+                        Kalyani Nagar, Pune, 411014
+                    </span>
+                </td>
+            </tr>
+
+        </table>
+
+        <div style="margin-top:18px;">
+
+        <a href="https://www.pinterest.com/valasysmedia/">
+        <img src="cid:pinterest" width="25">
+        </a>
+
+        <a href="https://www.youtube.com/@ValasysMedia">
+        <img src="cid:youtube" width="25">
+        </a>
+
+        <a href="https://www.facebook.com/ValasysMedia">
+        <img src="cid:facebook" width="25">
+        </a>
+
+        <a href="https://www.instagram.com/valasysmedia/">
+        <img src="cid:instagram" width="25">
+        </a>
+
+        <a href="https://www.linkedin.com/company/valasys-media/">
+        <img src="cid:linkedin" width="25">
+        </a>
+
+        <a href="https://x.com/ValasysB2B">
+        <img src="cid:x" width="25">
+        </a>
+
+        </div>
+        </td>
+
+        </tr>
+
+        </table>
+        <div style="margin-top:18px;">
+        
+        <a href="https://globeeawards.com/2026-winners-achievement-awards/#:~:text=Valasys%20Media">
+        <img src="cid:awards"
+        width="650"
+        style="display:block;">
+        </a>
+        </div>
+    `;
+
+    window.emailSignature = signature;
+
+    const subjectPatterns = [
+    "How is {company} finding in-market accounts?",
+    "How does {company} spot ready-to-buy accounts?"
+    ];
+
+    let subjectIndex = 0;
+
+    function getNextSubject() {
+        const subject = subjectPatterns[subjectIndex];
+        subjectIndex = (subjectIndex + 1) % subjectPatterns.length;
+        return subject;
+    }
+
+    let emailAction = 'send';
+    let emailSequenceData = [];
+
+    function getDefaultComposeBody() {
+        return `
+            <p>Hello {first_name},</p>
+            <p>{company_about}</p>
+            <p>Quick question: how does your team currently spot accounts researching solutions like yours, before they land on your site or a competitor's?</p>
+            <p>We turn real-time intent signals into <b>HQL, BANT-qualified leads</b> - so outreach hits accounts already in-market, not after they've decided.</p>
+            <p>I can show you the list of companies currently researching solutions like {company}'s, and how we convert that into sales-ready leads for your team.</p>
+            <p><b>Happy to share the list first, worth a look before we jump on a call?</b></p>
+        `;
+    }
+
+    const FOLLOWUP_NUMBERS = [1, 2, 3, 4, 5];
+    const followupEditors = {};
+    // Raw templates (placeholders intact) currently loaded into each follow-up editor.
+    let loadedFollowupTemplates = {};
+    let defaultFollowupTemplates = {};
+    // Follow-ups the user edited in this compose session.
+    const dirtyFollowups = new Set();
+    // Programmatic setData() also fires change:data; ignore those.
+    let settingFollowupData = false;
+
+    function renderFollowupCards() {
+        const grid = document.getElementById('followupGrid');
+        if (!grid || grid.dataset.ready === '1') return;
+
+        grid.innerHTML = FOLLOWUP_NUMBERS.map(number => `
+            <div class="seq-card" data-sequence="${number}">
+                <div class="seq-card-header">
+                    <span class="seq-step">Follow-up ${number}</span>
+                    <span class="seq-badge" id="seqBadge${number}">Pending</span>
+                </div>
+                <div class="seq-field-label"><i class="fas fa-heading"></i> Subject</div>
+                <div class="seq-subject" id="followupSubject${number}"></div>
+                <div class="seq-field-label" style="margin-top:8px;"><i class="fas fa-align-left"></i> Body</div>
+                <div id="followupEditor${number}"></div>
+                <div class="seq-meta" id="seqMeta${number}"></div>
+            </div>
+        `).join('');
+        grid.dataset.ready = '1';
+
+        FOLLOWUP_NUMBERS.forEach(number => {
+            ClassicEditor.create(document.getElementById(`followupEditor${number}`), {
+                toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'undo', 'redo']
+            }).then(followupEditor => {
+                followupEditors[number] = followupEditor;
+                setFollowupEditorData(number, loadedFollowupTemplates[number] || '');
+
+                followupEditor.model.document.on('change:data', () => {
+                    if (settingFollowupData) return;
+                    dirtyFollowups.add(number);
+                    setFollowupBadge(number, 'edited', 'Edited');
+                });
+            }).catch(error => {
+                console.error(`Unable to create Follow-up ${number} editor:`, error);
+            });
+        });
+
+        updateFollowupSubjects();
+    }
+
+    function setFollowupEditorData(number, html) {
+        const followupEditor = followupEditors[number];
+        if (!followupEditor) return;
+
+        settingFollowupData = true;
+        try {
+            followupEditor.setData(html || '<p></p>');
+        } finally {
+            settingFollowupData = false;
+        }
+    }
+
+    function setFollowupTemplates(templates) {
+        loadedFollowupTemplates = {};
+        FOLLOWUP_NUMBERS.forEach(number => {
+            loadedFollowupTemplates[number] = (templates || {})[String(number)] || '';
+            setFollowupEditorData(number, loadedFollowupTemplates[number]);
+        });
+    }
+
+    async function loadDefaultFollowupTemplates() {
+        if (Object.keys(defaultFollowupTemplates).length) {
+            return defaultFollowupTemplates;
+        }
+
+        try {
+            const response = await fetch('/followup-templates', { cache: 'no-store' });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                defaultFollowupTemplates = data.followup_templates || {};
+            }
+        } catch (error) {
+            console.error('Unable to load default follow-up templates:', error);
+        }
+
+        return defaultFollowupTemplates;
+    }
+
+    function updateFollowupSubjects() {
+        const subject = (document.getElementById('emailSubject') || {}).value || '';
+        FOLLOWUP_NUMBERS.forEach(number => {
+            const element = document.getElementById(`followupSubject${number}`);
+            if (element) element.textContent = `Re: ${subject}`;
+        });
+    }
+
+    function setFollowupBadge(number, state, text, meta) {
+        const badge = document.getElementById(`seqBadge${number}`);
+        if (badge) {
+            badge.className = `seq-badge seq-badge-${state}`;
+            badge.textContent = text;
+        }
+
+        if (meta !== undefined) {
+            const metaElement = document.getElementById(`seqMeta${number}`);
+            if (metaElement) metaElement.textContent = meta;
+        }
+    }
+
+    function resetFollowupBadges() {
+        setFollowupBadge(0, 'pending', 'Initial');
+        FOLLOWUP_NUMBERS.forEach(number => setFollowupBadge(number, 'pending', 'Pending', ''));
+    }
+
+    function applySequenceStatus(record, selectedCount) {
+        const sequence = Array.isArray(record.email_sequence) ? record.email_sequence : [];
+        const nextNumber = Number((record.next_followup || {}).number || 0);
+        const suffix = selectedCount > 1 ? ` (status for ${record.email})` : '';
+
+        FOLLOWUP_NUMBERS.forEach(number => {
+            if (dirtyFollowups.has(number)) return;
+
+            const item = sequence.find(entry => Number(entry.number) === number) || {};
+
+            if (item.sent) {
+                setFollowupBadge(
+                    number,
+                    'sent',
+                    'Sent',
+                    `Already sent${item.sent_date ? ` on ${item.sent_date}` : ''}${suffix}. Edits apply to prospects that have not received it yet.`
+                );
+            } else if (number === nextNumber && !record.has_reply) {
+                setFollowupBadge(
+                    number,
+                    'scheduled',
+                    'Scheduled next',
+                    `Scheduled for ${record.next_followup.due_at || 'the next window'}${suffix}.`
+                );
+            } else {
+                setFollowupBadge(number, 'pending', 'Pending', '');
+            }
+        });
+    }
+
+    // Follow-ups to store on every selected prospect: anything the user edited,
+    // plus anything loaded from a saved (non-default) template so the whole
+    // selection ends up with the same sequence.
+    function getFollowupTemplatesToSave() {
+        const templates = {};
+
+        FOLLOWUP_NUMBERS.forEach(number => {
+            const followupEditor = followupEditors[number];
+            if (!followupEditor) return;
+
+            const loaded = loadedFollowupTemplates[number] || '';
+            const isCustom = loaded && loaded !== (defaultFollowupTemplates[String(number)] || '');
+
+            if (dirtyFollowups.has(number) || isCustom) {
+                const html = followupEditor.getData().trim();
+                if (html) templates[String(number)] = html;
+            }
+        });
+
+        return templates;
+    }
+
+    async function saveFollowupTemplatesFor(emails) {
+        const templates = getFollowupTemplatesToSave();
+        if (!Object.keys(templates).length) {
+            return { success: true, skipped: true };
+        }
+
+        const response = await fetch('/followup-templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ emails, followup_templates: templates })
+        });
+
+        let result = {};
+        try {
+            result = await response.json();
+        } catch (error) {}
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || `HTTP ${response.status}`);
+        }
+
+        return result;
+    }
+
+    function openEmailModal(action = 'send') {
+        const count = getCheckedProspectCheckboxes().length;
+
+        if (count === 0) {
+            showBootstrapToast('Please select at least one prospect.', 'warning');
+            return;
+        }
+
+        emailAction = action;
+        emailSequenceData = [];
+        dirtyFollowups.clear();
+        resetFollowupBadges();
+
+        document.getElementById('emailSubject').value = getNextSubject();
+        updateFollowupSubjects();
+
+        const selectedCountLabel = document.getElementById('seqSelectedCount');
+        if (selectedCountLabel) {
+            selectedCountLabel.textContent = `all ${count} selected`;
+        }
+
+        const modalTitle = document.querySelector('#emailModal .modal-header h2');
+        const sendBtnText = document.querySelector('#sendBtn .btn-text');
+        if (action === 'queue') {
+            modalTitle.innerHTML = '<i class="fas fa-clock"></i> Queue Emails';
+            sendBtnText.innerHTML = '<i class="fas fa-clock"></i> Queue Emails';
+        } else {
+            modalTitle.innerHTML = '<i class="fas fa-paper-plane"></i> Compose Email';
+            sendBtnText.innerHTML = '<i class="fas fa-paper-plane"></i> Send Emails';
+        }
+
+        if (typeof editor !== 'undefined' && editor) {
+            try {
+                editor.setData(getDefaultComposeBody());
+            } catch (error) {}
+        }
+
+        document.getElementById('emailModal').style.display = 'block';
+
+        loadDefaultFollowupTemplates().then(templates => {
+            setFollowupTemplates(templates);
+            loadFollowupActivity();
+        });
+    }
+
+    function escapeFollowupHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderFollowupActivity(records) {
+        const container = document.getElementById('followupActivityList');
+        if (!container) return;
+
+        if (!records || !records.length) {
+            container.innerHTML = `
+                <div style="padding:14px;border:1px dashed #d1d5db;border-radius:10px;background:#f9fafb;color:#6b7280;font-size:13px;">
+                    No email sequence data found for the selected prospect(s).
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = records.map(record => {
+            const messages = Array.isArray(record.messages) ? record.messages : [];
+
+            // =====================================================
+            // ACTUAL SENT EMAILS
+            // =====================================================
+            const sentMessages = messages
+                .filter(message => {
+                    if (!message || !['initial', 'followup'].includes(message.type)) {
+                        return false;
+                    }
+
+                    if (message.type === 'initial') {
+                        return true;
+                    }
+
+                    const number = Number(message.number);
+                    return Number.isInteger(number) && number >= 1 && number <= 5;
+                })
+                .sort((a, b) => {
+                    const aNumber = a.type === 'initial' ? 0 : Number(a.number || 0);
+                    const bNumber = b.type === 'initial' ? 0 : Number(b.number || 0);
+                    return aNumber - bNumber;
+                });
+
+            const historyHtml = sentMessages.length
+                ? sentMessages.map(message => {
+                    const isInitial = message.type === 'initial';
+                    const number = Number(message.number || 0);
+                    const label = isInitial
+                        ? 'Initial Email'
+                        : `Follow-up #${number}`;
+
+                    return `
+                        <div style="display:flex;gap:10px;padding:12px 0;border-top:1px solid #eef0f3;">
+                            <div style="width:30px;height:30px;min-width:30px;border-radius:50%;background:${isInitial ? '#eef2ff' : '#ecfdf5'};display:flex;align-items:center;justify-content:center;color:${isInitial ? '#4f46e5' : '#059669'};">
+                                <i class="fas ${isInitial ? 'fa-paper-plane' : 'fa-redo'}"></i>
+                            </div>
+
+                            <div style="min-width:0;flex:1;">
+                                <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                                    <strong style="font-size:13px;color:#111827;">
+                                        ${escapeFollowupHtml(label)}
+                                    </strong>
+                                    <span style="font-size:11px;color:#6b7280;">
+                                        ${escapeFollowupHtml(message.date || '')}
+                                    </span>
+                                </div>
+
+                                <div style="font-size:11px;font-weight:700;color:#4f46e5;margin-top:3px;">
+                                    Sales Intelligence
+                                </div>
+
+                                <div style="font-size:12px;color:#111827;margin-top:8px;font-weight:700;">
+                                    Subject
+                                </div>
+                                <div style="font-size:12px;color:#111827;margin-top:4px;padding:9px 10px;border-radius:8px;background:#f9fafb;border:1px solid #e5e7eb;">
+                                    ${escapeFollowupHtml(message.subject || '(No subject)')}
+                                </div>
+
+                                <div style="font-size:12px;color:#111827;margin-top:9px;font-weight:700;">
+                                    Body
+                                </div>
+                                <div style="margin-top:4px;padding:11px;border-radius:8px;background:#f8fafc;border:1px solid #e5e7eb;color:#374151;font-size:12px;line-height:1.5;max-height:300px;overflow:auto;">
+                                    ${message.body || '<span style="color:#9ca3af;">Email body not stored for this message.</span>'}
+                                </div>
+
+                                <span style="display:inline-block;margin-top:6px;padding:2px 7px;border-radius:999px;background:#dcfce7;color:#166534;font-size:10px;font-weight:700;">
+                                    SENT
+                                </span>
+                            </div>
+                        </div>`;
+                }).join('')
+                : `
+                    <div style="font-size:12px;color:#6b7280;padding:10px 0;">
+                        No sent emails found yet.
+                    </div>`;
+
+            // =====================================================
+            // NEXT SCHEDULED FOLLOW-UP
+            // Backend provides this as next_followup.
+            // It is NOT marked as SENT. It is the email that will be
+            // sent next if the prospect still has no reply.
+            // =====================================================
+            const nextFollowup = record.next_followup;
+            let nextFollowupHtml = '';
+
+            if (
+                nextFollowup &&
+                Number(nextFollowup.number) >= 1 &&
+                Number(nextFollowup.number) <= 5 &&
+                !record.has_reply &&
+                record.campaign_status === 'Running'
+            ) {
+                const nextNumber = Number(nextFollowup.number);
+
+                nextFollowupHtml = `
+                    <div style="margin-top:14px;padding:14px;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;">
+                        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                            <div>
+                                <div style="font-size:13px;font-weight:700;color:#1e3a8a;">
+                                    <i class="fas fa-clock" style="margin-right:6px;"></i>
+                                    Follow-up #${nextNumber} — Scheduled Next
+                                </div>
+                                <div style="font-size:11px;color:#475569;margin-top:4px;">
+                                    This is the next follow-up that will be sent if there is no customer reply.
+                                </div>
+                            </div>
+                            <span style="padding:3px 8px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:700;">
+                                SCHEDULED
+                            </span>
+                        </div>
+
+                        <div style="font-size:11px;color:#475569;margin-top:10px;">
+                            Scheduled for: <strong>${escapeFollowupHtml(nextFollowup.due_at || 'Not available')}</strong>
+                        </div>
+
+                        <div style="font-size:12px;color:#1e293b;margin-top:10px;font-weight:700;">
+                            Subject that will be sent
+                        </div>
+                        <div style="font-size:12px;color:#111827;margin-top:4px;padding:9px 10px;border-radius:8px;background:#fff;border:1px solid #dbeafe;">
+                            ${escapeFollowupHtml(nextFollowup.subject || '(No subject)')}
+                        </div>
+
+                        <div style="font-size:12px;color:#1e293b;margin-top:9px;font-weight:700;">
+                            Body that will be sent
+                        </div>
+                        <div style="margin-top:4px;padding:11px;border-radius:8px;background:#fff;border:1px solid #dbeafe;color:#374151;font-size:12px;line-height:1.5;max-height:300px;overflow:auto;">
+                            ${nextFollowup.body || '<span style="color:#9ca3af;">Scheduled email body is not available.</span>'}
+                        </div>
+                    </div>
+                `;
+            } else if (
+                !record.has_reply &&
+                record.campaign_status === 'Running' &&
+                Number(record.followup_count || 0) < 5
+            ) {
+                nextFollowupHtml = `
+                    <div style="margin-top:14px;padding:12px;border:1px dashed #cbd5e1;border-radius:10px;background:#f8fafc;color:#64748b;font-size:12px;">
+                        Next follow-up is scheduled, but its preview is not available from the server yet.
+                    </div>
+                `;
+            }
+
+            return `
+                <div style="border:1px solid #e5e7eb;border-radius:12px;padding:13px 15px;background:#fff;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                        <div style="min-width:0;">
+                            <div style="font-weight:700;color:#111827;font-size:13px;">
+                                ${escapeFollowupHtml(record.name || record.email)}
+                            </div>
+                            <div style="font-size:11px;color:#6b7280;margin-top:2px;">
+                                ${escapeFollowupHtml(record.email)}
+                            </div>
+                        </div>
+
+                        <span style="font-size:11px;font-weight:700;color:${record.has_reply ? '#b91c1c' : '#166534'};">
+                            ${record.has_reply ? 'REPLIED' : escapeFollowupHtml(record.campaign_status || 'Running')}
+                        </span>
+                    </div>
+
+                    <div style="margin-top:9px;">
+                        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:2px;">
+                            Sent Email History
+                        </div>
+                        ${historyHtml}
+                    </div>
+
+                    ${nextFollowupHtml}
+                </div>`;
+        }).join('');
+    }
+
+    async function loadFollowupActivity() {
+        const container = document.getElementById('followupActivityList');
+        const loading = document.getElementById('followupActivityLoading');
+
+        const checkboxes = Array.from(
+            getCheckedProspectCheckboxes()
+        );
+
+        const prospects = [];
+        const seen = new Set();
+
+        checkboxes.forEach(cb => {
+            const email = (cb.dataset.email || '').trim();
+            const key = email.toLowerCase();
+
+            if (!email || seen.has(key)) return;
+
+            seen.add(key);
+
+            prospects.push({
+                email,
+                name: cb.dataset.firstname || cb.dataset.fullname || email
+            });
+        });
+
+        if (!container) return;
+
+        if (!prospects.length) {
+            renderFollowupActivity([]);
+            return;
+        }
+
+        if (loading) {
+            loading.style.display = 'inline-block';
+        }
+
+        container.innerHTML = '';
+
+        try {
+            const results = await Promise.all(
+                prospects.map(async prospect => {
+                    try {
+                        const response = await fetch(
+                            `/email-thread/${encodeURIComponent(prospect.email)}`,
+                            { cache: 'no-store' }
+                        );
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        return {
+                            ...data,
+                            email: prospect.email,
+                            name: prospect.name
+                        };
+                    } catch (error) {
+                        console.error(
+                            `Failed to load sent emails for ${prospect.email}:`,
+                            error
+                        );
+
+                        return {
+                            success: false,
+                            email: prospect.email,
+                            name: prospect.name,
+                            messages: [],
+                            error: error.message
+                        };
+                    }
+                })
+            );
+
+            const validResults = results.filter(
+                record => record.success === true
+            );
+
+            if (!validResults.length) {
+                container.innerHTML = `
+                    <div style="padding:12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Unable to find sent email data for the selected prospect(s).
+                    </div>`;
+                return;
+            }
+
+            // The six tabs use the first selected prospect as the preview
+            // because each prospect can have different placeholder values.
+            // The existing activity panel below still shows every selected prospect.
+            const firstRecord = validResults[0];
+            emailSequenceData = Array.isArray(firstRecord.email_sequence)
+                ? firstRecord.email_sequence
+                : [];
+
+            if (!emailSequenceData.length) {
+                emailSequenceData = [
+                    {
+                        number: 0,
+                        label: 'Send Email',
+                        type: 'initial',
+                        subject: getNextSubject(),
+                        body: getDefaultComposeBody(),
+                        sent: false
+                    }
+                ];
+            }
+
+            const initialItem = emailSequenceData.find(entry => Number(entry.number) === 0) || {};
+            if (initialItem.subject) {
+                document.getElementById('emailSubject').value = initialItem.subject;
+                updateFollowupSubjects();
+            }
+            if (initialItem.body && typeof editor !== 'undefined' && editor) {
+                editor.setData(initialItem.body);
+            }
+            setFollowupBadge(0, initialItem.sent ? 'sent' : 'pending', initialItem.sent ? 'Initial · Sent' : 'Initial');
+
+            // Prefill untouched follow-up editors with the first prospect's
+            // saved templates (the defaults when none were saved).
+            if (firstRecord.followup_templates) {
+                FOLLOWUP_NUMBERS.forEach(number => {
+                    if (dirtyFollowups.has(number)) return;
+                    const html = firstRecord.followup_templates[String(number)];
+                    if (html) {
+                        loadedFollowupTemplates[number] = html;
+                        setFollowupEditorData(number, html);
+                    }
+                });
+            }
+
+            applySequenceStatus(firstRecord, prospects.length);
+            renderFollowupActivity(validResults);
+
+        } catch (error) {
+            console.error('Unable to load sent email data:', error);
+
+            container.innerHTML = `
+                <div style="padding:12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Unable to load sent email data right now.
+                </div>`;
+        } finally {
+            if (loading) {
+                loading.style.display = 'none';
+            }
+        }
+    }
+
+    function closeEmailModal() {
+        document.getElementById('emailModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('emailModal');
+        if (event.target == modal) {
+            closeEmailModal();
+        }
+    }
+
+    // Delete selected prospects and move them to the MongoDB Blacklist collection.
+    let pendingBlacklistEmails = [];
+
+    function blacklistSelected() {
+        const checkboxes = Array.from(
+            getCheckedProspectCheckboxes()
+        );
+
+        if (checkboxes.length === 0) {
+            showBootstrapToast(
+                'Please select at least one prospect.',
+                'warning'
+            );
+            return;
+        }
+
+        pendingBlacklistEmails = checkboxes
+            .map(cb => (cb.dataset.email || '').trim().toLowerCase())
+            .filter(Boolean);
+
+        if (pendingBlacklistEmails.length === 0) {
+            showBootstrapToast(
+                'No valid email addresses were selected.',
+                'warning'
+            );
+            return;
+        }
+
+        document.getElementById('deleteConfirmCount').textContent = pendingBlacklistEmails.length;
+
+        const modalElement = document.getElementById('deleteConfirmModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        modal.show();
+    }
+
+    async function confirmBlacklistDelete() {
+        const emails = [...pendingBlacklistEmails];
+
+        if (emails.length === 0) {
+            return;
+        }
+
+        const blacklistBtn = document.getElementById('blacklistBtn');
+        const confirmBtn = document.getElementById('confirmDeleteBlacklistBtn');
+
+        if (blacklistBtn) {
+            blacklistBtn.disabled = true;
+        }
+
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Deleting...';
+        }
+
+        try {
+            const response = await fetch('/blacklist-prospects', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ emails: emails })
+            });
+
+            let result = {};
+            try {
+                result = await response.json();
+            } catch (jsonError) {
+                result = {};
+            }
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.error ||
+                    result.message ||
+                    'Failed to delete and blacklist the selected prospects.'
+                );
+            }
+
+            const modalElement = document.getElementById('deleteConfirmModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+
+            showBootstrapToast(
+                result.message ||
+                `${result.deleted || 0} prospect(s) deleted and blacklisted.`,
+                'success',
+                5000
+            );
+
+            pendingBlacklistEmails = [];
+
+            // Reload so blacklisted/deleted records disappear from index.html.
+            setTimeout(() => {
+                window.location.reload();
+            }, 700);
+
+        } catch (error) {
+            console.error('Blacklist API error:', error);
+
+            showBootstrapToast(
+                'Failed to delete prospects: ' + error.message,
+                'danger',
+                7000
+            );
+
+            if (blacklistBtn) {
+                blacklistBtn.disabled = getCheckedProspectCheckboxes().length === 0;
+            }
+
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-trash-alt me-1"></i> Yes, Delete';
+            }
+        }
+    }
+
+    // Remove successfully queued/sent prospect rows immediately without reloading the page.
+    function removeProspectRowsByEmails(emails) {
+        const emailSet = new Set(
+            (emails || [])
+                .map(email => String(email || '').trim().toLowerCase())
+                .filter(Boolean)
+        );
+
+        if (emailSet.size === 0) {
+            return;
+        }
+
+        allRows = allRows.filter(row => {
+            const checkbox = row.querySelector('.prospect-checkbox');
+
+            if (!checkbox) {
+                return true;
+            }
+
+            const email = String(
+                checkbox.dataset.email || ''
+            ).trim().toLowerCase();
+
+            if (emailSet.has(email)) {
+                const table = getProspectTable();
+                if (table) {
+                    table.row(row).remove();
+                } else {
+                    row.remove();
+                }
+                return false;
+            }
+
+            return true;
+        });
+
+        filteredRows = filteredRows.filter(row => allRows.includes(row));
+
+        // Keep record/search counters in sync with the in-memory table.
+        updateSearchCounters();
+
+        // Update the "X records" badge if present.
+        const recordBadges = document.querySelectorAll(
+            '.table-topbar .badge'
+        );
+        recordBadges.forEach(badge => {
+            const text = badge.textContent || '';
+            if (text.includes('records')) {
+                const icon = badge.querySelector('i');
+                badge.textContent = '';
+                if (icon) {
+                    badge.appendChild(icon);
+                    badge.appendChild(document.createTextNode(' '));
+                }
+                badge.appendChild(
+                    document.createTextNode(`${allRows.length} records`)
+                );
+            }
+        });
+
+        // Reset the page if the current page became empty.
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredRows.length / rowsPerPage)
+        );
+
+        if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
+
+        // If everything is gone, show a friendly empty state inside the table.
+        const tbody = document.querySelector('#dataTable tbody');
+
+        if (tbody && allRows.length === 0 && !getProspectTable()) {
+            tbody.innerHTML = `
+                <tr class="live-empty-row">
+                    <td colspan="11" class="text-center py-5 text-secondary">
+                        <div class="mb-2">
+                            <i class="bi bi-inbox fs-2" style="color:var(--valasys-orange);"></i>
+                        </div>
+                        <strong>No prospects remaining</strong>
+                        <div class="small mt-1">
+                            Sent or queued prospects have been removed from this list.
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        showPage(currentPage);
+    }
+
+    // Send Emails
+
+    async function sendEmails() {
+
+        const checkboxes = getCheckedProspectCheckboxes();
+        const subject = document.getElementById('emailSubject').value;
+        let body = editor.getData();
+
+        /* Force email body to Arial 10px */
+        body = `
+        <div style="
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        ">
+            ${body}
+        </div>
+        `;
+
+        let payloadBody = body + signature;
+
+        payloadBody = payloadBody.replace(/\.\.\/static\/logo\.png/g, "cid:logo");
+        payloadBody = payloadBody.replace(/\.\.\/static\/regards\.png/g, "cid:regards");
+        payloadBody = payloadBody.replace(/\.\.\/static\/awards\.png/g, "cid:awards");
+
+        payloadBody = payloadBody.replace(/\.\.\/static\/facebook\.png/g, "cid:facebook");
+        payloadBody = payloadBody.replace(/\.\.\/static\/instagram\.png/g, "cid:instagram");
+        payloadBody = payloadBody.replace(/\.\.\/static\/linkedin\.png/g, "cid:linkedin");
+        payloadBody = payloadBody.replace(/\.\.\/static\/youtube\.png/g, "cid:youtube");
+        payloadBody = payloadBody.replace(/\.\.\/static\/pinterest\.png/g, "cid:pinterest");
+        payloadBody = payloadBody.replace(/\.\.\/static\/x\.png/g, "cid:x");
+
+        
+         if (!subject || !body) {
+            showBootstrapToast(
+                'Please fill in the subject and email body.',
+                'warning'
+            );
+            return;
+        }
+
+        if (checkboxes.length === 0) {
+            showBootstrapToast(
+                'Please select at least one prospect.',
+                'warning'
+            );
+            return;
+        }
+
+        const recipients = [];
+        const displayRecipients = [];
+
+        checkboxes.forEach(cb => {
+            recipients.push({
+                email: cb.dataset.email,
+                first_name: cb.dataset.firstname,
+                title: cb.dataset.title,
+                company: cb.dataset.company
+            });
+
+            const name = [cb.dataset.firstname, cb.dataset.company ? `· ${cb.dataset.company}` : '']
+                .filter(Boolean)
+                .join(' ');
+            displayRecipients.push({ email: cb.dataset.email, name: name || cb.dataset.email });
+        });
+
+        const action = emailAction;
+        const recipientEmails = recipients.map(item => item.email);
+
+        // Close the compose window right away; progress is shown in the
+        // corner toast and the job keeps running if the user changes page.
+        closeEmailModal();
+
+        // Selected rows are being handled now, so clear the selection.
+        checkboxes.forEach(cb => {
+            cb.checked = false;
+        });
+        updateSelection();
+
+        // Apply the edited follow-up sequence to every selected prospect first.
+        try {
+            const saved = await saveFollowupTemplatesFor(recipientEmails);
+            if (!saved.skipped) {
+                showBootstrapToast(
+                    `Follow-up ${saved.followups.join(', ')} updated for ${saved.matched} prospect(s).`,
+                    'success'
+                );
+            }
+        } catch (error) {
+            console.error('Unable to save follow-up templates:', error);
+            showBootstrapToast(
+                `Emails were not sent: could not save follow-ups (${error.message}).`,
+                'danger',
+                7000
+            );
+            checkboxes.forEach(cb => {
+                cb.checked = true;
+            });
+            updateSelection();
+            return;
+        }
+
+        try {
+            await ApolloEmailJob.start(
+                action,
+                {
+                    recipients: recipients,
+                    subject: subject,
+                    body: body,
+                    signature: window.emailSignature || ''
+                },
+                displayRecipients
+            );
+        } catch (error) {
+            console.error('Email job error:', error);
+            showBootstrapToast('Failed to start sending: ' + error.message, 'danger', 7000);
+            checkboxes.forEach(cb => {
+                cb.checked = true;
+            });
+            updateSelection();
+        }
+    }
+
+    // When a background job finishes (on this page), drop the rows that were
+    // sent or queued from the prospect table.
+    window.addEventListener('apollo:email-job-done', function (event) {
+        const items = (event.detail && event.detail.items) || [];
+        const handled = items
+            .filter(item => ['sent', 'queued'].includes(item.status))
+            .map(item => String(item.email || '').trim().toLowerCase())
+            .filter(Boolean);
+
+        if (handled.length) {
+            removeProspectRowsByEmails(handled);
+            updateSelection();
+            showPage(currentPage);
+        }
+    });
+    // Bootstrap Toast notifications
+    function showBootstrapToast(message, type = 'success', delay = 5000) {
+        const toastEl = document.getElementById('apolloToast');
+        const toastBody = document.getElementById('apolloToastBody');
+        const toastIcon = document.getElementById('apolloToastIcon');
+
+        const styles = {
+            success: { bg: 'bg-success', icon: 'bi-check-circle-fill', label: 'Success' },
+            danger: { bg: 'bg-danger', icon: 'bi-exclamation-triangle-fill', label: 'Error' },
+            warning: { bg: 'bg-warning text-dark', icon: 'bi-exclamation-circle-fill', label: 'Notice' },
+            info: { bg: 'bg-primary', icon: 'bi-info-circle-fill', label: 'Info' }
+        };
+
+        const config = styles[type] || styles.info;
+
+        toastEl.className = `toast border-0 shadow ${config.bg}`;
+        toastBody.textContent = message;
+        toastIcon.innerHTML = `<i class="bi ${config.icon}"></i>`;
+
+        // Keep the close button readable on the yellow warning toast.
+        const closeBtn = toastEl.querySelector('.btn-close');
+        closeBtn.classList.toggle('btn-close-white', type !== 'warning');
+
+        const toast = bootstrap.Toast.getOrCreateInstance(toastEl, {
+            delay: delay,
+            autohide: true
+        });
+        toast.show();
+    }
+
+    // Backward-compatible helper used by successful send/queue responses.
+    function showSuccess(message) {
+        showBootstrapToast(message, 'success', 5000);
+    }
+
+    // Export to CSV
+    // Export ONLY selected prospects to CSV
+    function exportToCSV() {
+
+        const table = document.getElementById('dataTable');
+
+        // Get only selected checkboxes
+        const selectedCheckboxes = getCheckedProspectCheckboxes();
+
+        // If nothing is selected
+        if (selectedCheckboxes.length === 0) {
+            alert('Please select at least one prospect to export.');
+            return;
+        }
+
+        let csv = [];
+
+        // Headers (skip checkbox column)
+        const headers = [];
+        const headerCells = table.querySelectorAll('thead th');
+
+        for (let i = 1; i < headerCells.length; i++) {
+            headers.push(headerCells[i].textContent.trim());
+        }
+
+        csv.push(headers.join(','));
+
+        // Export ONLY selected rows
+        selectedCheckboxes.forEach(checkbox => {
+
+            const tr = checkbox.closest('tr');
+            const cells = tr.querySelectorAll('td');
+
+            const row = [];
+
+            // Skip checkbox column
+            for (let i = 1; i < cells.length; i++) {
+
+                let value = "";
+
+                // Export actual URL instead of View / Visit
+                const link = cells[i].querySelector("a");
+
+                if (link) {
+                    value = link.href;
+                } else {
+                    value = cells[i].textContent
+                        .trim()
+                        .replace(/\s+/g, " ");
+                }
+
+                // Escape quotes
+                value = value.replace(/"/g, '""');
+
+                row.push(`"${value}"`);
+            }
+
+            csv.push(row.join(','));
+        });
+
+        // Download CSV
+        const csvContent = csv.join('\n');
+
+        const blob = new Blob(
+            [csvContent],
+            { type: 'text/csv;charset=utf-8;' }
+        );
+
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+
+        a.href = url;
+        a.download = `selected_prospects_${new Date().toISOString().split('T')[0]}.csv`;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        window.URL.revokeObjectURL(url);
+    }
+
+
+
+
+    ClassicEditor.create(document.querySelector('#emailBodyEditor'), {
+    toolbar: [
+        'heading',
+        '|',
+        'bold',
+        'italic',
+        'link',
+        'bulletedList',
+        'numberedList',
+        '|',
+        'outdent',
+        'indent',
+        '|',
+        'undo',
+        'redo'
+    ]
+}).then(newEditor => {
+    editor = newEditor;
+});
+
+renderFollowupCards();
+
+
+function showToast(message, success = true){
+
+    const toast = document.getElementById("toast");
+
+    toast.innerHTML = success
+        ? `<i class="fas fa-check-circle"></i> ${message}`
+        : `<i class="fas fa-times-circle"></i> ${message}`;
+
+    toast.className = success
+        ? "toast show"
+        : "toast error show";
+
+    setTimeout(() => {
+        toast.className = "toast";
+    }, 3000);
+
+}
+
+
+// ================= CSV COMPANY UPLOAD =================
+document.addEventListener("DOMContentLoaded", function () {
+    const companyCsv = document.getElementById("companyCsv");
+    const companyNameInput = document.getElementById("companyName");
+    const uploadZone = document.getElementById("companyUploadZone");
+    const dropZone = document.getElementById("csvDropZone");
+    const browseBtn = document.getElementById("csvBrowseBtn");
+    const useFileBtn = document.getElementById("csvUseFileBtn");
+    const csvFileText = document.getElementById("csvFileText");
+    const csvStatusBadge = document.getElementById("csvStatusBadge");
+    const csvSelectedSummary = document.getElementById("csvSelectedSummary");
+    const preview = document.getElementById("csvUploadPreview");
+    const previewName = document.getElementById("csvPreviewName");
+    const previewMeta = document.getElementById("csvPreviewMeta");
+    const csvModalElement = document.getElementById("csvUploadModal");
+
+    if (!companyCsv || !csvModalElement) return;
+
+    let selectedCsvFile = null;
+
+    function validateCsv(file) {
+        if (!file) return false;
+
+        if (!file.name.toLowerCase().endsWith(".csv")) {
+            alert("Please upload a CSV file.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function setCsvFile(file) {
+        if (!validateCsv(file)) return;
+
+        selectedCsvFile = file;
+
+        try {
+            const transfer = new DataTransfer();
+            transfer.items.add(file);
+            companyCsv.files = transfer.files;
+        } catch (error) {
+            console.warn("Could not assign file programmatically:", error);
+        }
+
+        previewName.textContent = file.name;
+        previewMeta.textContent =
+            `${(file.size / 1024).toFixed(1)} KB • CSV selected`;
+
+        csvFileText.textContent = file.name;
+        csvStatusBadge.innerHTML =
+            '<i class="bi bi-check-circle-fill me-1"></i> CSV selected';
+
+        csvSelectedSummary.classList.remove("d-none");
+        preview.classList.remove("d-none");
+        useFileBtn.disabled = false;
+
+        if (companyNameInput) {
+            companyNameInput.value = "";
+            companyNameInput.disabled = true;
+        }
+    }
+
+    function clearCsvFile() {
+        selectedCsvFile = null;
+        companyCsv.value = "";
+
+        csvFileText.textContent = "";
+        csvStatusBadge.innerHTML =
+            '<i class="bi bi-file-earmark me-1"></i> No file selected';
+
+        csvSelectedSummary.classList.add("d-none");
+        preview.classList.add("d-none");
+        useFileBtn.disabled = true;
+
+        if (companyNameInput) {
+            companyNameInput.disabled = false;
+        }
+    }
+
+    companyCsv.addEventListener("change", function () {
+        if (this.files && this.files.length > 0) {
+            setCsvFile(this.files[0]);
+        }
+    });
+
+    if (browseBtn) {
+        browseBtn.addEventListener("click", function () {
+            companyCsv.click();
+        });
+    }
+
+    if (dropZone) {
+        ["dragenter", "dragover"].forEach(eventName => {
+            dropZone.addEventListener(eventName, function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                dropZone.classList.add("drag-over");
+            });
+        });
+
+        ["dragleave", "drop"].forEach(eventName => {
+            dropZone.addEventListener(eventName, function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                dropZone.classList.remove("drag-over");
+            });
+        });
+
+        dropZone.addEventListener("drop", function (event) {
+            const files = event.dataTransfer.files;
+
+            if (files && files.length > 0) {
+                setCsvFile(files[0]);
+            }
+        });
+
+        dropZone.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                companyCsv.click();
+            }
+        });
+    }
+
+    if (useFileBtn) {
+        useFileBtn.addEventListener("click", function () {
+            if (!selectedCsvFile) return;
+
+            const modal = bootstrap.Modal.getInstance(csvModalElement);
+            if (modal) {
+                modal.hide();
+            }
+        });
+    }
+
+    // Main upload card also opens the modal.
+    if (uploadZone) {
+        uploadZone.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+
+                const modal = bootstrap.Modal.getOrCreateInstance(csvModalElement);
+                modal.show();
+            }
+        });
+    }
+
+    window.removeCsvFile = function (event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        clearCsvFile();
+    };
+
+    csvModalElement.addEventListener("hidden.bs.modal", function () {
+        dropZone.classList.remove("drag-over");
+    });
+});
+
+</script>
+
+<div id="toast" class="toast"></div>
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchBtn = document.getElementById("searchBtn");
+    const searchLoader = document.getElementById("searchLoader");
+
+    if (!searchBtn || !searchLoader) {
+        return;
+    }
+
+
+    function showSearchLoader() {
+
+        // Prevent multiple clicks
+        searchBtn.disabled = true;
+
+        // Change button state
+        searchBtn.classList.add("searching");
+
+        // Show full page loader
+        searchLoader.classList.add("active");
+
+        // Prevent scrolling while searching
+        document.body.style.overflow = "hidden";
+    }
+
+
+    function hideSearchLoader() {
+
+        searchBtn.disabled = false;
+
+        searchBtn.classList.remove("searching");
+
+        searchLoader.classList.remove("active");
+
+        document.body.style.overflow = "";
+    }
+
+
+    /*
+     * Expose functions globally.
+     * Useful if your search is performed using fetch/AJAX.
+     */
+    window.showSearchLoader = showSearchLoader;
+    window.hideSearchLoader = hideSearchLoader;
+
+
+    /*
+     * If your search uses a normal HTML form submission,
+     * the loader will remain visible while the new page loads.
+     */
+    const searchForm = searchBtn.closest("form");
+
+    if (searchForm) {
+
+        searchForm.addEventListener("submit", function () {
+
+            showSearchLoader();
+
+        });
+
+    }
+
+
+    /*
+     * If someone clicks the button directly.
+     */
+    searchBtn.addEventListener("click", function () {
+
+        if (searchBtn.disabled) {
+            return;
+        }
+
+        showSearchLoader();
+
+    });
+
+});
+
+</script>
+
+<script src="/static/sidebar.js"></script>
+
+<script>
+(function () {
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('apollo-theme');
+
+    function applyTheme(theme) {
+        root.setAttribute('data-theme', theme);
+        localStorage.setItem('apollo-theme', theme);
+        if (themeToggle) {
+            themeToggle.setAttribute(
+                'aria-label',
+                theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+            );
+            themeToggle.setAttribute(
+                'title',
+                theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+            );
+        }
+    }
+
+    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+            applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    }
+})();
+
+</script>
+<script>
+$(document).ready(function () {
+
+    document.querySelectorAll('#dataTable tbody tr').forEach(row => {
+        row.style.display = '';
+    });
+
+    $('#dataTable').on('draw.dt', function () {
+        if (typeof updateSelection === 'function') updateSelection();
+    });
+
+    $('#dataTable').DataTable({
+
+        // Pagination
+        paging: true,
+
+        // Search box
+        searching: true,
+
+        // Sorting
+        ordering: true,
+
+        // Page size
+        pageLength: 25,
+
+        // Options in "Show X entries"
+        lengthMenu: [
+            [10, 25, 50, 100, -1],
+            [10, 25, 50, 100, "All"]
+        ],
+
+        // Responsive
+        responsive: false,
+
+        // Horizontal scrolling
+        scrollX: true,
+
+        // Default sorting
+        order: [
+            [1, 'desc']
+        ],
+
+        // Don't sort checkbox column
+        columnDefs: [
+            {
+                targets: 0,
+                orderable: false,
+                searchable: false
+            }
+        ],
+
+        // UI text
+        language: {
+            search: "Search prospects:",
+            lengthMenu: "Show _MENU_ prospects",
+            info: "Showing _START_ to _END_ of _TOTAL_ prospects",
+            infoEmpty: "No prospects available",
+            zeroRecords: "No matching prospects found",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        }
+
+    });
+
+});
+</script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+<style>
+/* ============================================================
+   APOLLO CREDIT BALANCE
+   ============================================================ */
+.apollo-search-credit-row {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+}
+
+.apollo-search-main-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 48px;
+}
+
+.apollo-credit-card {
+    position: relative;
+    flex: 0 0 245px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 34px 8px 10px;
+    border: 1px solid rgba(63, 162, 203, .25);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #eef8fc 0%, #ffffff 100%);
+    box-shadow: 0 5px 16px rgba(10, 43, 96, .08);
+}
+
+.apollo-credit-icon {
+    width: 31px;
+    height: 31px;
+    flex: 0 0 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #0a2b60;
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.apollo-credit-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.apollo-credit-title {
+    margin-bottom: 3px;
+    color: #0a2b60;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.apollo-credit-values {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.apollo-credit-values span {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    min-width: 0;
+}
+
+.apollo-credit-values strong {
+    color: #0a2b60;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.apollo-credit-values small {
+    color: #6b7280;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.apollo-credit-status {
+    margin-top: 3px;
+    color: #6b7280;
+    font-size: 8px;
+    line-height: 1.1;
+}
+
+.apollo-credit-refresh {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #0a2b60;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.apollo-credit-refresh:hover {
+    background: #eef8fc;
+    color: #3fa2cb;
+}
+
+.apollo-credit-refresh.loading i {
+    display: inline-block;
+    animation: apolloCreditSpin .7s linear infinite;
+}
+
+@keyframes apolloCreditSpin {
+    to { transform: rotate(360deg); }
+}
+
+html[data-theme="dark"] .apollo-credit-card {
+    border-color: #343a42;
+    background: linear-gradient(135deg, #22262b 0%, #191c20 100%);
+    box-shadow: 0 7px 20px rgba(0, 0, 0, .28);
+}
+
+html[data-theme="dark"] .apollo-credit-title,
+html[data-theme="dark"] .apollo-credit-values strong {
+    color: #f1f4f7;
+}
+
+html[data-theme="dark"] .apollo-credit-values small,
+html[data-theme="dark"] .apollo-credit-status {
+    color: #a8b0ba;
+}
+
+html[data-theme="dark"] .apollo-credit-refresh {
+    color: #3fa2cb;
+}
+
+html[data-theme="dark"] .apollo-credit-refresh:hover {
+    background: #282c30;
+}
+
+@media (max-width: 1199.98px) {
+    .apollo-search-credit-row {
+        flex-direction: column;
+    }
+
+    .apollo-credit-card {
+        flex-basis: auto;
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+(function () {
+    const totalEl = document.getElementById('apolloCreditTotal');
+    const usedEl = document.getElementById('apolloCreditUsed');
+    const remainingEl = document.getElementById('apolloCreditRemaining');
+    const statusEl = document.getElementById('apolloCreditStatus');
+    const refreshBtn = document.getElementById('apolloCreditRefresh');
+
+    if (!totalEl || !usedEl || !remainingEl || !statusEl) return;
+
+    function formatCredit(value) {
+        const number = Number(value);
+        return Number.isFinite(number) ? number.toLocaleString('en-US') : '--';
+    }
+
+    async function refreshApolloCredits() {
+        if (refreshBtn) refreshBtn.classList.add('loading');
+        statusEl.textContent = 'Refreshing...';
+
+        try {
+            const response = await fetch('/apollo-credits', {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' },
+                cache: 'no-store'
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.available) {
+                throw new Error(result.error || 'Unable to load Apollo credits.');
+            }
+
+            totalEl.textContent = formatCredit(result.total);
+            usedEl.textContent = formatCredit(result.used);
+            remainingEl.textContent = formatCredit(result.remaining);
+            statusEl.textContent = 'Live Apollo lead-credit balance';
+
+            const card = document.getElementById('apolloCreditCard');
+            if (card) {
+                card.dataset.creditTotal = result.total;
+                card.dataset.creditUsed = result.used;
+                card.dataset.creditRemaining = result.remaining;
+            }
+        } catch (error) {
+            console.error('Apollo credit refresh failed:', error);
+            totalEl.textContent = '--';
+            usedEl.textContent = '--';
+            remainingEl.textContent = '--';
+            statusEl.textContent = 'Credit balance unavailable';
+        } finally {
+            if (refreshBtn) refreshBtn.classList.remove('loading');
+        }
+    }
+
+    window.refreshApolloCredits = refreshApolloCredits;
+
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', refreshApolloCredits);
+    }
+
+    // Load the live balance when the page opens. After Search Prospects
+    // completes, the normal POST response reloads this page, so the balance
+    // is fetched again automatically.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', refreshApolloCredits, { once: true });
+    } else {
+        refreshApolloCredits();
+    }
+})();
+</script>
+</body>
+</html>

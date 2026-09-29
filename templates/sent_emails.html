@@ -1,0 +1,930 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sent Emails - Apollo Prospect Finder</title>
+        
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        
+        <!-- Font Awesome for Icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/sent_emails.css">
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <link rel="stylesheet" href="/static/rocket-loader.css">
+<link rel="stylesheet" href="/static/email-progress.css">
+<link rel="stylesheet" href="/static/dark-theme.css">
+</head>
+    <body class="sent-page">
+<script src="/static/rocket-loader.js"></script>
+<script src="/static/email-progress.js" defer></script>
+
+{% include 'sidebar.html' %}
+
+<main class="app-main" id="appMain">
+
+    <div class="container-fluid app-content">
+   {% include 'navbar.html' %}
+ 
+
+
+        <div class="sent-hero card border-0 rounded-4 shadow-sm mb-4">
+            <div class="card-body p-4 p-lg-3">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                    <div>
+                        <div class="text-uppercase fw-semibold small sent-kicker mb-2">Email Outreach Workspace</div>
+                        <h1 class="fw-bold mb-2 sent-hero-title">
+                            <i class="bi bi-send-check-fill me-2"></i> Sent Emails
+                        </h1>
+                        <p class="mb-0 text-secondary">Track delivery, replies, follow-ups and campaign progress from one place.</p>
+                    </div>
+                    <span class="badge rounded-pill sent-hero-badge px-3 py-2">
+                        <i class="bi bi-graph-up-arrow me-1"></i> Campaign Tracking
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-card card border-0 rounded-4 shadow-sm mb-4">
+            <div class="card-body p-3 p-md-4">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input class="form-control" 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search by name, email, company, or country..."
+                        onkeyup="searchTable()"
+                    >
+                </div>
+            </div>
+            <div class="search-info mt-2">
+                <i class="bi bi-info-circle me-1"></i>
+                Search across all fields in real-time
+            </div>
+            </div>
+        </div>
+
+        <!-- Date Range Filter -->
+        <div class="filter-card card border-0 rounded-4 shadow-sm mb-4">
+            <div class="card-body p-3 p-md-4">
+            <div class="filter-header">
+                <i class="fas fa-filter"></i>
+                <h3>Filter by Sent Date Range</h3>
+            </div>
+
+            {% if from_date or to_date %}
+            <div class="filter-active">
+                <span class="filter-active-text">
+                    <i class="fas fa-check-circle"></i>
+                    Active Filter: 
+                    {% if from_date and to_date %}
+                        {{ from_date }} to {{ to_date }}
+                    {% elif from_date %}
+                        From {{ from_date }}
+                    {% elif to_date %}
+                        Up to {{ to_date }}
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+
+            <form method="GET" action="/sent-emails" class="filter-form">
+                <div class="filter-group">
+                    <label for="from_date">
+                        <i class="fas fa-calendar-alt"></i>
+                        From Date
+                    </label>
+                    <input
+                        class="form-control"
+                        type="date"
+                        id="from_date"
+                        name="from_date"
+                        value="{{ from_date or '' }}"
+                    >
+                </div>
+
+                <div class="filter-group">
+                    <label for="to_date">
+                        <i class="fas fa-calendar-alt"></i>
+                        To Date
+                    </label>
+                    <input
+                        class="form-control"
+                        type="date"
+                        id="to_date"
+                        name="to_date"
+                        value="{{ to_date or '' }}"
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-orange btn-filter">
+                    <i class="fas fa-filter"></i>
+                    Apply Filter
+                </button>
+
+                <button type="button" class="btn btn-outline-secondary btn-reset" onclick="resetFilter()">
+                    <i class="fas fa-redo"></i>
+                    Reset
+                </button>
+            </form>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        {% if data %}
+        <div class="stats-card card border-0 rounded-4 shadow-sm mb-4">
+            <div class="row g-3 p-3 p-lg-4">
+
+            <div class="col-6 col-xl-3"><div class="stat-item">
+                <span class="stat-number">{{ data|length }}</span>
+                <span class="stat-label">Total Sent</span>
+            </div></div>
+
+            <div class="col-6 col-xl-3"><div class="stat-item">
+                <span class="stat-number">
+                    {{ data|selectattr('campaign_status','equalto','Running')|list|length }}
+                </span>
+                <span class="stat-label">Running</span>
+            </div></div>
+
+            <div class="col-6 col-xl-3"><div class="stat-item">
+                <span class="stat-number">
+                    {{ data|selectattr('has_reply','equalto',True)|list|length }}
+                </span>
+                <span class="stat-label">Replies</span>
+            </div></div>
+
+            <div class="col-6 col-xl-3"><div class="stat-item">
+                <span class="stat-number">
+                    {{ data|selectattr('campaign_status','equalto','Completed - No Reply')|list|length }}
+                </span>
+                <span class="stat-label">Completed</span>
+            </div></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Bar -->
+        <div class="action-bar card border-0 rounded-4 shadow-sm mb-4">
+
+    <div class="card-body p-3 p-md-4">
+
+        <!-- LEFT -->
+        <div class="selection-info">
+
+            <div class="selection-count">
+                <i class="fas fa-check-square"></i>
+
+                <span id="selectionText">
+                    No emails selected
+                </span>
+
+                <span id="selectedCount"
+                      class="visually-hidden">
+                    0
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+        <div class="action-buttons">
+
+            <select
+                class="form-select"
+                id="replyStatusFilter"
+                onchange="filterByReplyStatus()">
+
+                <option value="all">
+                    All Reply Status
+                </option>
+
+                <option value="replied">
+                    Replied
+                </option>
+
+                <option value="no_reply">
+                    No Reply
+                </option>
+
+            </select>
+
+
+            <button
+                class="btn btn-outline-orange btn-select-all"
+                onclick="selectAllVisible()">
+
+                <i class="fas fa-check-double"></i>
+                Select All (Page)
+
+            </button>
+
+
+            <button
+                class="btn btn-success btn-export"
+                onclick="exportToCSV()">
+
+                <i class="fas fa-download"></i>
+                Export CSV
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <!-- Sent Emails Table -->
+     <div class="table-card table-shell">
+        <div class="table-topbar d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 px-3 px-md-4 py-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="table-accent"></span>
+                <div>
+                    <h2 class="h5 fw-bold mb-0">
+                        <i class="bi bi-table me-2" style="color:var(--valasys-orange);"></i>
+                    Sent Email Records
+                    </h2>
+                    <small class="text-secondary">Responsive, searchable prospect database</small>
+                </div>
+            </div>
+            <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                <i class="bi bi-database me-1" style="color:var(--valasys-orange);"></i>
+                {{ data|length if data else 0 }} records
+            </span>
+        </div>
+
+        {% if data %}
+
+        <div class="table-responsive">
+            <table id="dataTable"
+                   class="table table-hover align-middle mb-0 display nowrap"
+                   style="width:100%;">
+
+                <thead>
+                    <tr>
+                        <th style="width:40px;">
+                            <input type="checkbox"
+                                   id="selectAllCheckbox"
+                                   onchange="toggleSelectAll(this)">
+                        </th>
+
+                        <th>Sent Date &amp; Time</th>
+                        <th>First Name</th>
+                        <th>Title</th>
+                        <th>Email</th>
+                        <th>Delivery Status</th>
+                        <th>Reply Status</th>
+                        <th>Follow-up</th>
+                        <th>Next Scheduled Follow-up</th>
+                        <th>Campaign Status</th>
+                        <th>Last Follow-up</th>
+                        <th>Subject</th>
+                        <th>Company</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tableBody">
+
+                    {% for row in data %}
+
+                    <tr class="data-row"
+                        data-reply-status="{{ 'replied' if row.has_reply else 'no_reply' }}">
+
+                        <!-- Checkbox -->
+                        <td class="checkbox-cell">
+                            <input
+                                type="checkbox"
+                                class="email-checkbox"
+                                data-email="{{ row.email or '' }}"
+                                onchange="updateSelection()"
+                            >
+                        </td>
+
+                        <!-- Sent Date -->
+                        <td>
+                            <div class="date-badge">
+
+                                {% set display_date =
+                                    row.email_sent_date or row.email_failed_date
+                                %}
+
+                                {% if display_date %}
+
+                                    <div>
+                                        {{ display_date[:10].split('-')[2] }}-{{ display_date[:10].split('-')[1] }}-{{ display_date[:10].split('-')[0] }}
+                                    </div>
+
+                                    {% if display_date|length >= 19 %}
+
+                                    <div style="
+                                        font-size:10px;
+                                        margin-top:2px;
+                                        white-space:nowrap;
+                                    ">
+                                        {{ display_date[11:19] }} IST
+                                    </div>
+
+                                    {% endif %}
+
+                                {% else %}
+                                    -
+                                {% endif %}
+
+                            </div>
+                        </td>
+
+                        <td>{{ row.first_name or '-' }}</td>
+
+                        <td>{{ row.title or '-' }}</td>
+
+                        <td>{{ row.email or '-' }}</td>
+
+                        <!-- Delivery Status -->
+                        <td>
+
+                            {% if row.email_delivery_status in [
+                                'failed',
+                                'smtp_failed',
+                                'bounced',
+                                'quarantined'
+                            ] %}
+
+                                <span class="badge badge-failed">
+                                    <i class="fas fa-times-circle"></i>
+
+                                    {% if row.email_delivery_status == 'bounced' %}
+                                        Bounced
+                                    {% elif row.email_delivery_status == 'quarantined' %}
+                                        Quarantined
+                                    {% else %}
+                                        Failed
+                                    {% endif %}
+                                </span>
+
+                                {% if row.email_error %}
+                                    <div style="
+                                        font-size:11px;
+                                        color:#e53e3e;
+                                        margin-top:4px;
+                                    ">
+                                        Error: {{ row.email_error }}
+                                    </div>
+                                {% endif %}
+
+                            {% elif row.email_delivery_status == 'delivered' %}
+
+                                <span class="badge badge-sent">
+                                    <i class="fas fa-check-circle"></i>
+                                    Delivered
+                                </span>
+
+                            {% elif row.email_delivery_status in [
+                                'pending',
+                                'submitted'
+                            ] %}
+
+                                <span class="badge badge-running">
+                                    <i class="fas fa-clock"></i>
+                                    Pending
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-sent">
+                                    <i class="fas fa-check-circle"></i>
+                                    Sent
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- Reply Status -->
+                        <td>
+
+                            {% if row.has_reply %}
+
+                                <span class="badge badge-sent">
+                                    <i class="fas fa-reply"></i>
+                                    Replied
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-failed">
+                                    <i class="fas fa-times-circle"></i>
+                                    No Reply
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- Follow-up -->
+                        <td>
+
+                            {% if row.followup_count and row.followup_count > 0 %}
+
+                                <span class="badge badge-sent">
+                                    <i class="fas fa-paper-plane"></i>
+                                    {{ row.followup_count }}/5
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-failed">
+                                    <i class="fas fa-clock"></i>
+                                    0/5
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- Next Scheduled Follow-up -->
+                        <td>
+
+                            {% if row.followup_due_at and ((row.followup_count or 0)|int) < 5 %}
+
+                                <span class="badge badge-running">
+                                    <i class="fas fa-clock"></i>
+                                    Follow-up #{{ (row.followup_count or 0) + 1 }}
+                                    scheduled
+                                </span>
+
+                                <div style="
+                                    font-size:11px;
+                                    margin-top:5px;
+                                ">
+                                    {{ row.followup_due_at }} IST
+                                </div>
+
+                            {% elif
+                                ((row.followup_count or 0)|int) >= 5
+                                or row.campaign_status == "Completed - Follow-ups Sent"
+                            %}
+
+                                <span class="badge badge-completed">
+                                    <i class="fas fa-check"></i>
+                                    All 5 completed
+                                </span>
+
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </td>
+
+                        <!-- Campaign Status -->
+                        <td>
+
+                            {% if row.campaign_status == "Running" %}
+
+                                <span class="badge badge-running">
+                                    <i class="fas fa-spinner"></i>
+                                    Running
+                                </span>
+
+                            {% elif row.campaign_status == "Replied" %}
+
+                                <span class="badge badge-replied">
+                                    <i class="fas fa-reply"></i>
+                                    Replied
+                                </span>
+
+                            {% elif row.campaign_status == "Delivery Failed" %}
+
+                                <span class="badge badge-failed">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Delivery Failed
+                                </span>
+
+                            {% elif row.campaign_status == "Completed - No Reply" %}
+
+                                <span class="badge badge-completed">
+                                    <i class="fas fa-check"></i>
+                                    Completed
+                                </span>
+
+                            {% elif
+                                ((row.followup_count or 0)|int) >= 5
+                                or row.campaign_status == "Completed - Follow-ups Sent"
+                            %}
+
+                                <span class="badge badge-completed">
+                                    <i class="fas fa-check"></i>
+                                    Completed
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-failed">
+                                    Unknown
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- Last Follow-up -->
+                        <td>
+
+                            {% if row.last_followup_date %}
+
+                                <div class="date-badge">
+                                    {{ row.last_followup_date[:10] }}
+                                </div>
+
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </td>
+
+                        <!-- Subject -->
+                        <td>
+                            {{ row.last_email_subject or '-' }}
+                        </td>
+
+                        <!-- Company -->
+                        <td>
+                            {{ row.company or '-' }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+        </div>
+
+        {% else %}
+
+        <div class="no-data text-center py-5">
+            <i class="fas fa-inbox"></i>
+            <p>No emails have been sent yet.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+</div>
+
+    </div>
+
+    <!-- Dashboard Footer -->
+    <footer class="dashboard-footer">
+        <p class="mb-0">
+            Copyright © 2026
+            <a href="https://valasys.com/" target="_blank" rel="noopener">Valasys Media.</a>
+            All rights reserved.
+        </p>
+    </footer>
+</main>
+    <script>
+        let sentEmailDataTable = null;
+        const selectedSentEmailIds = new Set();
+
+        function normalizeSentEmail(email) {
+            return String(email || '').trim().toLowerCase();
+        }
+
+        function getVisibleSentCheckboxes() {
+            if (!sentEmailDataTable) return [];
+            return $(sentEmailDataTable.rows({ page: 'current' }).nodes())
+                .find('.email-checkbox')
+                .toArray();
+        }
+
+        function restoreSentSelections() {
+            if (!sentEmailDataTable) return;
+            $(sentEmailDataTable.rows({ page: 'current' }).nodes())
+                .find('.email-checkbox')
+                .each(function () {
+                    const email = normalizeSentEmail(this.dataset.email);
+                    this.checked = !!email && selectedSentEmailIds.has(email);
+                });
+        }
+
+        function updateSelectAllState() {
+            const selectAll = document.getElementById('selectAllCheckbox');
+            if (!selectAll) return;
+
+            const checkboxes = getVisibleSentCheckboxes();
+            const checked = checkboxes.filter(cb => cb.checked).length;
+
+            selectAll.checked = checkboxes.length > 0 && checked === checkboxes.length;
+            selectAll.indeterminate = checked > 0 && checked < checkboxes.length;
+        }
+
+        function updateSelection() {
+            if (!sentEmailDataTable) return;
+
+            const visibleCheckboxes = getVisibleSentCheckboxes();
+            visibleCheckboxes.forEach(cb => {
+                const email = normalizeSentEmail(cb.dataset.email);
+                if (!email) return;
+                if (cb.checked) selectedSentEmailIds.add(email);
+                else selectedSentEmailIds.delete(email);
+            });
+
+            const count = selectedSentEmailIds.size;
+            const selectedCount = document.getElementById('selectedCount');
+            const selectionText = document.getElementById('selectionText');
+
+            if (selectedCount) selectedCount.textContent = count;
+            if (selectionText) {
+                selectionText.textContent = count === 0
+                    ? 'No emails selected'
+                    : count === 1
+                        ? '1 email selected'
+                        : `${count} emails selected`;
+            }
+
+            updateSelectAllState();
+        }
+
+        function selectAllVisible() {
+            const visibleCheckboxes = getVisibleSentCheckboxes();
+            visibleCheckboxes.forEach(cb => {
+                cb.checked = true;
+                const email = normalizeSentEmail(cb.dataset.email);
+                if (email) selectedSentEmailIds.add(email);
+            });
+            updateSelection();
+        }
+
+        function toggleSelectAll(checkbox) {
+            const checked = !!checkbox.checked;
+            getVisibleSentCheckboxes().forEach(cb => {
+                cb.checked = checked;
+                const email = normalizeSentEmail(cb.dataset.email);
+                if (!email) return;
+                if (checked) selectedSentEmailIds.add(email);
+                else selectedSentEmailIds.delete(email);
+            });
+            updateSelection();
+        }
+
+        function getSelectedSentEmails() {
+            return Array.from(selectedSentEmailIds);
+        }
+
+        function getSelectedSentRows() {
+            if (!sentEmailDataTable) return [];
+            const selected = selectedSentEmailIds;
+            return sentEmailDataTable.rows().nodes().toArray().filter(row => {
+                const cb = row.querySelector('.email-checkbox');
+                return cb && selected.has(normalizeSentEmail(cb.dataset.email));
+            });
+        }
+
+        function searchTable() {
+            if (!sentEmailDataTable) return;
+            const input = document.getElementById('searchInput');
+            sentEmailDataTable.search(input ? input.value : '').draw();
+        }
+
+        function filterByReplyStatus() {
+            if (!sentEmailDataTable) return;
+            const status = document.getElementById('replyStatusFilter')?.value || 'all';
+
+            // Reply status is stored on the row, so use DataTables custom filtering.
+            $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(fn => !fn.__sentReplyFilter);
+
+            if (status !== 'all') {
+                const replyFilter = function (settings, data, dataIndex) {
+                    if (settings.nTable.id !== 'dataTable') return true;
+                    const row = sentEmailDataTable.row(dataIndex).node();
+                    return row && row.getAttribute('data-reply-status') === status;
+                };
+                replyFilter.__sentReplyFilter = true;
+                $.fn.dataTable.ext.search.push(replyFilter);
+            }
+
+            sentEmailDataTable.draw();
+        }
+
+        function resetFilter() {
+            window.location.href = '/sent-emails';
+        }
+
+        function exportToCSV() {
+            if (!sentEmailDataTable) return;
+
+            const selectedRows = getSelectedSentRows();
+            const rowsToExport = selectedRows.length > 0
+                ? selectedRows
+                : sentEmailDataTable.rows({ search: 'applied' }).nodes().toArray();
+
+            let csv = [];
+            const headers = [
+                'Sent Date', 'First Name', 'Title', 'Email', 'Delivery Status',
+                'Reply Status', 'Follow-up Status', 'Next Scheduled Follow-up',
+                'Campaign Status', 'Last Follow-up', 'Subject', 'Company'
+            ];
+            csv.push(headers.join(','));
+
+            rowsToExport.forEach(tr => {
+                const cells = tr.querySelectorAll('td');
+                const row = [
+                    cells[1]?.innerText.trim() || '',
+                    cells[2]?.innerText.trim() || '',
+                    cells[3]?.innerText.trim() || '',
+                    cells[4]?.innerText.trim() || '',
+                    cells[5]?.innerText.trim() || '',
+                    cells[6]?.innerText.trim() || '',
+                    cells[7]?.innerText.trim() || '',
+                    cells[8]?.innerText.trim() || '',
+                    cells[9]?.innerText.trim() || '',
+                    cells[10]?.innerText.trim() || '',
+                    cells[11]?.innerText.trim() || '',
+                    cells[12]?.innerText.trim() || ''
+                ];
+                const cleanRow = row.map(value => String(value).replace(/\s+/g, ' ').trim().replace(/"/g, '""'));
+                csv.push(cleanRow.map(value => `"${value}"`).join(','));
+            });
+
+            const blob = new Blob(['\uFEFF' + csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sent_emails_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function openThread(email) {
+            fetch(`/email-thread/${email}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert('Thread not found');
+                        return;
+                    }
+
+                    document.getElementById('threadModal').style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+
+                    const info = `
+                        <div class="thread-status">
+                            <strong>Status:</strong> ${data.campaign_status}<br>
+                            <strong>Follow-ups:</strong> ${data.followup_count}/5<br>
+                            <strong>Reply:</strong> ${data.has_reply ? 'Received' : 'No Reply'}
+                        </div>`;
+                    document.getElementById('threadInfo').innerHTML = info;
+
+                    let html = '';
+                    data.messages.forEach(msg => {
+                        html += `
+                            <div class="message-card">
+                                <div class="message-title">
+                                    ${msg.type.toUpperCase()} ${msg.number > 0 ? '#' + msg.number : ''}
+                                </div>
+                                <div><strong>Date:</strong> ${msg.date}</div>
+                                <div><strong>Subject:</strong> ${msg.subject}</div>
+                                <hr>
+                                <div class="message-body">${msg.body}</div>
+                            </div>`;
+                    });
+                    document.getElementById('threadMessages').innerHTML = html;
+                });
+        }
+
+        function closeThread() {
+            document.getElementById('threadModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            $(document).on('change', '.email-checkbox', function () {
+                const email = normalizeSentEmail(this.dataset.email);
+                if (email) {
+                    if (this.checked) selectedSentEmailIds.add(email);
+                    else selectedSentEmailIds.delete(email);
+                }
+                updateSelection();
+            });
+        });
+    </script>
+
+    <script>
+    (function () {
+        const root = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('apollo-theme');
+
+        function applyTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            localStorage.setItem('apollo-theme', theme);
+            if (themeToggle) {
+                themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+                themeToggle.setAttribute('title', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+            }
+        }
+
+        applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function () {
+                applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            });
+        }
+    })();
+    </script>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loader = document.getElementById("pageLoader");
+    if (!loader) return;
+
+    setTimeout(function () {
+        loader.classList.add("loader-hidden");
+
+        // Remove completely after fade animation
+        setTimeout(function () {
+            loader.remove();
+        }, 500);
+
+    }, 2000);
+
+});
+</script>
+<script>
+$(document).ready(function () {
+    sentEmailDataTable = $('#dataTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        pageLength: 15,
+        lengthMenu: [
+            [5, 10, 15, 25, 50, 100, -1],
+            [5, 10, 15, 25, 50, 100, "All"]
+        ],
+        scrollX: true,
+        responsive: false,
+        order: [[1, 'desc']],
+        columnDefs: [
+            { targets: 0, orderable: false, searchable: false }
+        ],
+        language: {
+            search: "Search:",
+            searchPlaceholder: "Search sent emails...",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
+            infoEmpty: "Showing 0 to 0 of 0 entries",
+            zeroRecords: "No matching records found",
+            emptyTable: "No emails have been sent yet.",
+            paginate: {
+                first: "First",
+                previous: "Previous",
+                next: "Next",
+                last: "Last"
+            }
+        },
+        drawCallback: function () {
+            restoreSentSelections();
+            updateSelection();
+            updateSelectAllState();
+        }
+    });
+
+    // Keep the custom search box and DataTables search in sync.
+    const customSearch = document.getElementById('searchInput');
+    if (customSearch) {
+        customSearch.addEventListener('input', function () {
+            sentEmailDataTable.search(this.value).draw();
+        });
+    }
+
+    restoreSentSelections();
+    updateSelection();
+});
+</script>
+<script src="/static/sidebar.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    </body>
+    </html>

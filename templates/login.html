@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo App - Login</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="../static/login.css">
+
+    <style>
+        :root {
+            --valasys-orange: #0a2b60;
+            --valasys-orange-dark: #3fa2cb;
+            --valasys-orange-soft: #eef8fc;
+            --valasys-charcoal: #0a2b60;
+        }
+
+        /* Prevent login page scrolling */
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        .login-shell {
+            width: min(1080px, calc(100vw - 40px));
+            height: min(650px, calc(100vh - 40px));
+            min-height: 0;
+        }
+
+        /* Blue brand panel */
+        .brand-panel {
+            background:
+                radial-gradient(
+                    circle at 85% 12%,
+                    rgba(63, 162, 203, 0.30),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    145deg,
+                    #061b3d 0%,
+                    #0a2b60 65%,
+                    #3fa2cb 100%
+                );
+        }
+
+        .brand-title .accent {
+            color: #3fa2cb;
+        }
+
+        .eyebrow {
+            color: #8ed4ef;
+        }
+
+        .feature-item i {
+            color: #3fa2cb;
+        }
+
+        .login-badge {
+            background: #eef8fc;
+            color: #0a2b60;
+            border-color: rgba(63, 162, 203, 0.25);
+        }
+
+        .form-control:focus {
+            border-color: #3fa2cb;
+            box-shadow: 0 0 0 4px rgba(63, 162, 203, 0.14);
+        }
+
+        .password-toggle:hover,
+        .password-toggle:focus-visible {
+            color: #0a2b60;
+            background: #eef8fc;
+        }
+
+        .btn-login {
+            background: linear-gradient(
+                90deg,
+                #0a2b60,
+                #3fa2cb,
+                #0a2b60
+            );
+            background-size: 200% 100%;
+            transition:
+                background-position 0.35s ease,
+                transform 0.18s ease,
+                box-shadow 0.18s ease;
+        }
+
+        .btn-login:hover,
+        .btn-login:focus {
+            background-position: 100% 0;
+            transform: translateY(-1px);
+            box-shadow: 0 13px 26px rgba(10, 43, 96, 0.28);
+        }
+
+        .security-note i {
+            color: #3fa2cb;
+        }
+
+        /* Logo */
+        .logo-wrap {
+            border: 1px solid rgba(63, 162, 203, 0.25);
+            box-shadow:
+                0 14px 30px rgba(0, 0, 0, 0.18),
+                0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        /* Decorative brand circles */
+        .brand-panel::before {
+            border-color: rgba(63, 162, 203, 0.20);
+        }
+
+        /* Keep login content inside viewport */
+        .login-panel {
+            overflow: hidden;
+        }
+
+        .login-content {
+            max-height: calc(100vh - 80px);
+            overflow: hidden;
+        }
+
+        /* Smaller screens */
+        @media (max-width: 900px) {
+            html,
+            body {
+                overflow-y: auto;
+            }
+
+            .login-shell {
+                height: auto;
+                max-height: none;
+            }
+        }
+    </style>
+<link rel="stylesheet" href="/static/rocket-loader.css">
+</head>
+
+<body>
+<script src="/static/rocket-loader.js"></script>
+
+    <div class="login-shell">
+
+        <!-- LEFT BRAND PANEL -->
+        <section class="brand-panel">
+
+            <div class="brand-content">
+
+                <div class="logo-wrap">
+                    <img
+                        src="/static/main-new.png"
+                        alt="Valasys Media"
+                    >
+                </div>
+
+              
+
+                <h1 class="brand-title">
+                    Smarter prospecting.<br>
+                    <span class="accent">Simpler outreach.</span>
+                </h1>
+
+              
+
+                <div class="feature-grid">
+
+                    <div class="feature-item">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Prospect management</span>
+                    </div>
+
+                    <div class="feature-item">
+                        <i class="bi bi-envelope-paper-fill"></i>
+                        <span>Campaign outreach</span>
+                    </div>
+
+                    <div class="feature-item">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Scheduled email queue</span>
+                    </div>
+
+                    <div class="feature-item">
+                        <i class="bi bi-bar-chart-fill"></i>
+                        <span>Sent email tracking</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="brand-footer">
+                Valasys Media · Apollo App
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT LOGIN PANEL -->
+        <section class="login-panel">
+
+            <div class="login-content">
+
+                <div class="login-badge">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    Secure Workspace
+                </div>
+
+                <h2 class="login-title">
+                    Welcome back
+                </h2>
+
+                <p class="login-subtitle">
+                    Sign in to continue to your Apollo dashboard.
+                </p>
+
+
+                {% if error %}
+                <div class="alert alert-danger mb-4" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+
+                <form method="POST" action="/login">
+
+                    <!-- Username -->
+                    <div class="mb-3">
+
+                        <label
+                            for="username"
+                            class="form-label"
+                        >
+                            Username
+                        </label>
+
+                        <div class="input-group-custom">
+
+                            <i class="bi bi-person-fill input-icon"></i>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="username"
+                                name="username"
+                                placeholder="Enter your username"
+                                autocomplete="username"
+                                required
+                                autofocus
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Password -->
+                    <div class="mb-4">
+
+                        <label
+                            for="password"
+                            class="form-label"
+                        >
+                            Password
+                        </label>
+
+                        <div class="input-group-custom">
+
+                            <i class="bi bi-lock-fill input-icon"></i>
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                aria-describedby="passwordToggle"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="passwordToggle"
+                                aria-label="Show password"
+                                title="Show password"
+                            >
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Login Button -->
+                    <button
+                        type="submit"
+                        class="btn btn-login text-white w-100"
+                    >
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Sign In
+                    </button>
+
+                </form>
+
+
+                <!-- Security -->
+                <div class="security-note">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    <span>
+                        Your login is protected by the application's
+                        session security. Use your assigned credentials
+                        to access the workspace.
+                    </span>
+
+                </div>
+
+
+                <!-- Copyright -->
+                <div class="copyright">
+                    Copyright © 2026 Valasys Media.
+                    All rights reserved.
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- Password Toggle -->
+    <script>
+        const passwordInput =
+            document.getElementById('password');
+
+        const passwordToggle =
+            document.getElementById('passwordToggle');
+
+        passwordToggle?.addEventListener('click', () => {
+
+            const isPassword =
+                passwordInput.type === 'password';
+
+            passwordInput.type =
+                isPassword ? 'text' : 'password';
+
+            passwordToggle.innerHTML =
+                isPassword
+                    ? '<i class="bi bi-eye-slash-fill"></i>'
+                    : '<i class="bi bi-eye-fill"></i>';
+
+            passwordToggle.setAttribute(
+                'aria-label',
+                isPassword ? 'Hide password' : 'Show password'
+            );
+
+            passwordToggle.setAttribute(
+                'title',
+                isPassword ? 'Hide password' : 'Show password'
+            );
+
+        });
+    </script>
+
+</body>
+</html>

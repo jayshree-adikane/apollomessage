@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queued Emails - Apollo Prospect Finder</title>
+    <meta name="color-scheme" content="light dark">
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        
+        <!-- Font Awesome for Icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/sent_emails.css">
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+
+<link rel="stylesheet" href="/static/rocket-loader.css">
+<link rel="stylesheet" href="/static/email-progress.css">
+<link rel="stylesheet" href="/static/dark-theme.css">
+</head>
+<body class="sent-page queue-page">
+<script src="/static/rocket-loader.js"></script>
+<script src="/static/email-progress.js" defer></script>
+  
+{% include 'sidebar.html' %}
+<main class="app-main" id="appMain">
+ <div class="container-fluid app-content">
+   {% include 'navbar.html' %}
+
+ 
+
+          <div class="sent-hero card border-0 rounded-4 shadow-sm mb-4">
+            <div class="card-body p-4 p-lg-3">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                    <div>
+                        <div class="text-uppercase fw-semibold small sent-kicker mb-2">Email Queue
+</div>
+                        <h1 class="fw-bold mb-2 sent-hero-title">
+                            <i class="bi bi-send-check-fill me-2"></i> Queued Emails
+
+                        </h1>
+                        <p class="mb-0 text-secondary">Emails waiting for the next available 09:00 AM - 05:00 PM IST sending window.
+
+</p>
+                    </div>
+                    <span class="badge rounded-pill sent-hero-badge px-3 py-2">
+                        <i class="bi bi-graph-up-arrow me-1"></i> 30-second send gap
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-card card border-0 rounded-4 shadow-sm mb-4">
+            <div class="row g-3 p-3 p-lg-4">
+            <div class="col-6 col-xl-4"><div class="stat-item">
+                    <span class="stat-number" id="queuedCount">{{ queued_count or 0 }}</span>
+                    <span class="stat-label">Currently Queued</span>
+                </div>
+            </div>
+            <div class="col-6 col-xl-4"><div class="stat-item">
+                    <span class="stat-number">09:00 AM</span>
+                    <span class="stat-label">Queue Sending Starts (IST)</span>
+                </div>
+            </div>
+            <div class="col-6 col-xl-4"><div class="stat-item">
+                    <span class="stat-number">05:00 PM</span>
+                    <span class="stat-label">Queue Sending Ends (IST)</span>
+                </div>
+                </div></div>
+
+            </div>
+        </div>
+  <div class="container-fluid app-content">
+        <div class="queue-info card border-0 rounded-4 shadow-sm mb-4">
+          <div class="card-body p-md-4">
+            <div class="small">
+                <strong><i class="bi bi-info-circle me-1"></i> Queue behavior:</strong>
+                queued prospects stay out of the main Results table until sent. The scheduler sends
+                them during the 09:00 AM - 05:00 PM IST window with the configured 30-second gap.
+                After successful delivery, the queue fields are cleared and the prospect moves to Sent Emails.
+                </div>
+            </div>
+        </div>
+
+        <div class="search-card card border-0 rounded-4 shadow-sm mb-4">
+            <div class="card-body p-3 p-md-4">
+            <div class="queue-search-wrap">
+                <i class="bi bi-search"></i>
+                <input id="searchInput" type="text" class="form-control"
+                    placeholder="Search by name, email, company, title, or subject..."
+                    >
+            </div>
+            <div class="queue-dt-count mt-2" id="queueSearchCount"></div>
+         
+            </div>
+        </div>
+
+         <div class="table-card table-shell">
+        <div class="table-topbar d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 px-3 px-md-4 py-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="table-accent"></span>
+                <div>
+                    <h2 class="h5 fw-bold mb-0">
+                        <i class="bi bi-table me-2" style="color:var(--valasys-orange);"></i>
+                  Queued Emails
+                    </h2>
+                    <small class="text-secondary">Responsive, searchable prospect database</small>
+                </div>
+            </div>
+            <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                <i class="bi bi-database me-1" style="color:var(--valasys-orange);"></i>
+                {{ data|length if data else 0 }} records
+            </span>
+        </div>
+            {% if data %}
+             <div class="table-responsive">
+            <table id="dataTable"
+                   class="table table-hover align-middle mb-0 display nowrap"
+                   style="width:100%;">
+                    <thead>
+                        <tr>
+                            
+                            <th>Queue For</th>
+                            <th>Queued At</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Title</th>
+                            <th>Email</th>
+                            <th>Company</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queueBody">
+                    {% for row in data %}
+                        <tr class="queue-row">
+                            <td>
+                                <span class="queue-for-badge">
+                                    <i class="bi bi-calendar2-check me-1"></i>
+                                    {{ row.email_queued_for or '-' }}
+                                </span>
+                            </td>
+                            <td>{{ row.email_queued_at or '-' }}</td>
+                            <td>{{ row.first_name or '-' }}</td>
+                            <td>{{ row.last_name or '-' }}</td>
+                            <td>{{ row.title or '-' }}</td>
+                            <td class="text-break">{{ row.email or '-' }}</td>
+                            <td>{{ row.company or '-' }}</td>
+                            <td class="queue-subject">{{ row.email_queue_subject or '-' }}</td>
+                            <td>
+                                <span class="queue-status-badge">
+                                    <i class="bi bi-clock"></i> Queued
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- DataTables provides pagination, page-size and table information. -->
+            {% else %}
+            <div class="queue-empty">
+                <i class="bi bi-inbox"></i>
+                <p class="mb-0">No emails are currently queued.</p>
+            </div>
+            {% endif %}
+            </div>
+        </div>
+            </div>
+    </main>
+</div>
+
+   <footer class="dashboard-footer">
+        <p class="mb-0">
+            Copyright © 2026
+            <a href="https://valasys.com/" target="_blank" rel="noopener">Valasys Media.</a>
+            All rights reserved.
+        </p>
+    </footer>
+ <script>
+let queueDataTable = null;
+
+function applySearch() {
+    const value = document.getElementById('searchInput')?.value || '';
+    if (queueDataTable) queueDataTable.search(value).draw();
+}
+
+function initTheme() {
+    const saved = localStorage.getItem('apollo-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    btn.innerHTML = document.documentElement.getAttribute('data-theme') === 'dark'
+        ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initTheme();
+    const table = document.getElementById('dataTable');
+    if (!table || typeof $ === 'undefined' || !$.fn.DataTable) return;
+
+    queueDataTable = $('#dataTable').DataTable({
+        paging: true, searching: true, ordering: true, pageLength: 10,
+        lengthMenu: [[10, 15, 25, 50, 100, -1], [10, 15, 25, 50, 100, 'All']],
+        responsive:false, scrollX:true, autoWidth:false, order:[[1,'desc']],
+        language:{ search:'', searchPlaceholder:'Search queued emails...', lengthMenu:'Show _MENU_ entries',
+            info:'Showing _START_ to _END_ of _TOTAL_ entries', infoEmpty:'Showing 0 to 0 of 0 entries',
+            zeroRecords:'No matching queued emails found', emptyTable:'No emails are currently queued.',
+            paginate:{first:'First',previous:'Previous',next:'Next',last:'Last'} }
+    });
+
+    const searchInput=document.getElementById('searchInput');
+    if(searchInput) searchInput.addEventListener('input',function(){ queueDataTable.search(this.value).draw(); });
+    $('#dataTable_filter').hide();
+    queueDataTable.on('draw',function(){
+        const info=queueDataTable.page.info();
+        const count=document.getElementById('queueSearchCount');
+        if(count) count.textContent=`${info.recordsDisplay} matching record${info.recordsDisplay===1?'':'s'}`;
+    });
+});
+
+document.getElementById('themeToggle')?.addEventListener('click',()=>{
+    const nextTheme=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',nextTheme);
+    localStorage.setItem('apollo-theme',nextTheme); updateThemeIcon();
+});
+</script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loader = document.getElementById("pageLoader");
+    if (!loader) return;
+
+    setTimeout(function () {
+        loader.classList.add("loader-hidden");
+
+        // Remove completely after fade animation
+        setTimeout(function () {
+            loader.remove();
+        }, 500);
+
+    }, 2000);
+
+});
+</script>
+<script src="/static/sidebar.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

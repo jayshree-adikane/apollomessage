@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Apollo Prospect Finder</title>
+
+    <!-- Google Fonts -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700*&*display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../static/index.css">
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1><i class="fas fa-rocket"></i>  Sales Intelligence</h1>
+
+        <p>Discover Your Potential Clients</p>
+
+    </div>
+
+    <!-- Success Message -->
+
+    <div id="successMessage" class="success-message">
+
+        <i class="fas fa-check-circle"></i> <span id="successText"></span>
+
+    </div>
+
+    <!-- Search Form -->
+
+    <div class="form-card">
+
+        <form method="POST" enctype="multipart/form-data" id="searchForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="job_titles">
+
+                        <i class="fas fa-briefcase"></i>
+
+                        Job Titles
+
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="job_titles"
+
+                        name="job_titles"
+
+                        placeholder="e.g., Marketing Director, Sales Manager"
+
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="country">
+
+                        <i class="fas fa-globe"></i>
+
+                        Country
+
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="country"
+
+                        name="country"
+
+                        placeholder="e.g., United States, Canada"
+
+                    >
+
+                </div>
+
+                <div class="company-input-section">
+
+                <!-- Company Name -->
+
+                <div class="form-group">
+
+                    <label>
+
+                        <i class="fas fa-building"></i>
+
+                        Company Name
+
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="companyName"
+
+                        name="company_name"
+
+                        placeholder="e.g., Amazon, Microsoft"
+
+                    >
+
+                </div>
+
+
+
+            </div>
+
+                <div class="form-group">
+
+                    <label><i class="fas fa-hashtag"></i>
+
+                        Result Limit
+
+                    </label>
+
+                    <select name="limit" id="limit">
+
+                        <option value="10"selected>10</option>
+
+                        <option value="20">20</option>
+
+                        <option value="30">30</option>
+
+                        <option value="40">40</option>
+
+                        <option value="50">50</option>
+
+                        <option value="60">60</option>
+
+                        <option value="70">70</option>
+
+                        <option value="80">80</option>
+
+                        <option value="90">90</option>
+
+                        <option value="100">100</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- CSV Upload -->
+
+            <div class="form-group">
+
+                <label>
+
+                </label>
+
+                <label for="companyCsv" class="csv-upload-box">
+
+                    <i class="fas fa-cloud-upload-alt"></i>
+
+                    <span id="csvFileText" class="csv-upload-text">
+
+                        Choose CSV file
+
+                    </span>
+
+                    <button
+
+                        type="button"
+
+                        id="csvRemoveBtn"
+
+                        class="csv-remove"
+
+                        style="display:none;"
+
+                        onclick="removeCsvFile(event)">
+
+                        <i class="fas fa-times"></i>
+
+                    </button>
+
+                </label>
+
+                <input
+
+                    type="file"
+
+                    id="companyCsv"
+
+                    name="company_csv"
+
+                    accept=".csv"
+
+                >
+
+            </div>
+
+            <div class="action-row">
+
+                <button type="submit" id="searchBtn">
+
+                    <span class="search-text">
+
+                        <i class="fas fa-search"></i>
+
+                        Search Prospects
+
+                    </span>
+
+                    <span class="search-spinner"></span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Date Range Filter -->
+
+    {% if data %}
+
+    <div class="filter-card">
+
+        <div class="filter-header">
+
+            <i class="fas fa-filter"></i>
+
+            <h3>Filter by Date Range</h3>
+
+        </div>
+
+        {% if from_date or to_date %}
+
+        <div class="filter-active">
+
+            <span class="filter-active-text">
+
+                <i class="fas fa-check-circle"></i>
+
+                Active Filter: 
+
+                {% if from_date and to_date %}
+
+                    {{ from_date }} to {{ to_date }}
+
+                {% elif from_date %}
+
+                    From {{ from_date }}
+
+                {% elif to_date %}
+
+                    Up to {{ to_date }}
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+        {% endif %}
+
+        <form method="POST" class="filter-form">
+
+            <div class="filter-group">
+
+                <label for="from_date">
+
+                    <i class="fas fa-calendar-alt"></i>
+
+                    From Date
+
+                </label>
+
+                <input
+
+                    type="date"
+
+                    id="from_date"
+
+                    name="from_date"
+
+                    value="{{ from_date or '' }}"
+
+                >
+
+            </div>
+
+            <div class="filter-group">
+
+                <label for="to_date">
+
+                    <i class="fas fa-calendar-alt"></i>
+
+                    To Date
+
+                </label>
+
+                <input
+
+                    type="date"
+
+                    id="to_date"
+
+                    name="to_date"
+
+                    value="{{ to_date or '' }}"
+
+                >
+
+            </div>
+
+            <button type="submit" class="btn-filter">
+
+                <i class="fas fa-filter"></i>
+
+                Apply Filter
+
+            </button>
+
+            <button type="button" class="btn-reset" onclick="resetFilter()">
+
+                <i class="fas fa-redo"></i>
+
+                Reset
+
+            </button>
+
+        </form>
+
+    </div>
+
+    {% endif %}
+
+    <!-- Statistics -->
+
+    {% if data %}
+
+    <div class="stats-card">
+
+        <div class="stat-item">
+
+            <span class="stat-number">{{ data|length }}</span>
+
+            <span class="stat-label">Total Prospects</span>
+
+        </div>
+
+        <div class="stat-item">
+
+            <span class="stat-number">{{ data|selectattr('email')|list|length }}</span>
+
+            <span class="stat-label">With Email</span>
+
+        </div>
+
+        <div class="stat-item">
+
+            <span class="stat-number">{{ data|selectattr('linkedin')|list|length }}</span>
+
+            <span class="stat-label">With LinkedIn</span>
+
+        </div>
+
+        <div class="stat-item">
+
+            <span class="stat-label">Total Prospects</span>
+
+            <span class="stat-number" id="selectedCount">0</span>
+
+            <span class="stat-label">Selected</span>
+
+        </div>
+
+    </div>
+
+    <!-- Email Actions Bar -->
+
+    <div class="email-actions">
+
+        <div class="selection-info">
+
+            <div class="selection-count">
+
+                <i class="fas fa-check-square"></i>
+
+                <span id="selectionText">No prospects selected</span>
+
+            </div>
+
+        </div>
+
+        <div class="action-buttons">
+
+            <button class="btn-select-all" onclick="selectAll()">
+
+                <i class="fas fa-check-double"></i>
+
+                Select All
+
+            </button>
+
+            <button class="btn-export" onclick="exportToCSV()">
+
+                <i class="fas fa-download"></i>
+
+                Export CSV
+
+            </button>
+
+            <button class="btn-email" id="sendEmailBtn" onclick="openEmailModal('send')" disabled>
+
+                <i class="fas fa-envelope"></i>
+
+                Send Email
+
+            </button>
+
+            <button class="btn-view-sent" id="queueEmailBtn" onclick="openEmailModal('queue')" disabled>
+
+                <i class="fas fa-clock"></i>
+
+                Queue Emails
+
+            </button>
+
+            <!-- ✅ NEW BUTTON -->
+
+            <button class="btn-view-sent" onclick="window.location.href='/sent-emails'">
+
+                <i class="fas fa-paper-plane"></i>
+
+                View Sent Emails
+
+            </button>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <!-- Search Bar -->
+
+    <div class="search-card">
+
+        <div class="search-container">
+
+            <div class="search-input-wrapper">
+
+                <i class="fas fa-search"></i>
+
+                <input 
+
+                    type="text" 
+
+                    id="searchInput" 
+
+                    placeholder="Search by name, email, company, or country..."
+
+                    onkeyup="searchTable()"
+
+                >
+
+            </div>
+
+        </div>
+
+        <div class="search-info">
+
+            <i class="fas fa-info-circle"></i>
+
+            Search across all fields in real-time
+
+        </div>
+
+    </div>
+
+    <!-- Results Table -->
+
+    <div class="table-card">
+
+        <div class="table-header">
+
+            <h2><i class="fas fa-table"></i> Results</h2>
+
+        </div>
+
+        {% if data %}
+
+        <table id="dataTable">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+
+                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)">
+
+                    </th>
+
+                    <th>Extracted Date</th>
+
+                    <th>First Name</th>
+
+                    <th>Last Name</th>
+
+                    <th>Title</th>
+
+                    <th>Email</th>
+
+                    <th>Status</th>
+
+                    <th>LinkedIn</th>
+
+                    <th>Country</th>
+
+                    <th>Company</th>
+
+                    <th>Website</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for row in data %}
+
+                <tr class="data-row">
+
+                    <td class="checkbox-cell">
+
+                        {% if row.email %}
+
+                        <input 
+
+                            type="checkbox" 
+
+                            class="prospect-checkbox" 
+
+                            data-email="{{ row.email }}"
+
+                            data-firstname="{{ row.first_name or '' }}"
+
+                            data-title="{{ row.title or '' }}"
+
+                            data-company="{{ row.company or '' }}"
+
+                            onchange="updateSelection()"
+
+                        >
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <div class="date-badge">
+
+                            </i> {{ row.extracted_date or '-' }}
+
+                        </div>
+
+                    </td>
+
+                    <td>{{ row.first_name or '-' }}</td>
+
+                    <td>{{ row.last_name or '-' }}</td>
+
+                    <td>{{ row.title or '-' }}</td>
+
+                    <td>{{ row.email or '-' }}</td>
+
+                   <td>
+
+                        {% if row.email %}
+
+                            <span class="badge badge-verified">Verified</span>
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if row.linkedin %}
+
+                        <a href="{{ row.linkedin }}" target="_blank" class="link-icon">
+
+                            <i class="fab fa-linkedin"></i> View
+
+                        </a>
+
+                        {% else %}
+
+                        -
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>{{ row.country or '-' }}</td>
+
+                    <td>{{ row.company or '-' }}</td>
+
+                    <td>
+
+                        {% if row.website %}
+
+                        <a href="{{ row.website }}" target="_blank" class="link-icon">
+
+                            <i class="fas fa-external-link-alt"></i> Visit
+
+                        </a>
+
+                        {% else %}
+
+                        -
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <!-- Pagination -->
+
+        <div class="pagination-container">
+
+            <div class="pagination-info">
+
+                Showing <span id="showingStart">1</span> to <span id="showingEnd">5</span> of <span id="totalRows">{{ data|length }}</span> entries
+
+            </div>
+
+            <div class="pagination" id="paginationButtons">
+
+                <!-- Pagination buttons will be generated by JavaScript -->
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="no-data">
+
+            <i class="fas fa-search"></i>
+
+            <p>No records found. Search prospects to display data.</p>
+
+        </div>
+
+        {% endif %}
+
+
+
+    </div>
+
+</div>
+
+<!-- Email Modal -->
+
+<div id="emailModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2><i class="fas fa-paper-plane"></i> Compose Email</h2>
+
+            <span class="close" onclick="closeEmailModal()">&times;</span>
+
+        </div>
+
+        <div class="modal-body">
+
+            <form id="emailForm">
+
+                <div class="form-group">
+
+                    <label for="emailSubject"> 
+
+                        <i class="fas fa-heading"></i>
+
+                        Subject Line
+
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="emailSubject"
+
+                        name="subject"
+
+                        placeholder="A smarter way to capture in-market demand for {company}"
+
+                        value="A smarter way to capture in-market demand for {company}"
+
+                        required
+
+                    >
+
+                    <small style="color: #718096; margin-top: 5px; display: block;">
+
+                        Use {company}, {first_name}, {title} as placeholders
+
+                    </small>
+
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+
+                    <label for="emailBody">
+
+                        <i class="fas fa-align-left"></i>
+
+                        Email Body
+
+                    </label>
+
+                    <div id="emailBodyEditor">
+
+                    <div style="
+
+                        width:100%;
+
+                        padding:10px;
+
+                        font-family:Arial,sans-serif;
+
+                        font-size:14px;
+
+                        line-height:1.5;
+
+                        color:#333;
+
+                    ">
+
+                    <p>Hello {first_name},</p>
+
+                    <p>{company_about}</p>
+
+                    <p>
+
+                    Quick question: how does your team currently spot accounts researching solutions like yours, before they land on your site or a competitor's?
+
+                    </p>
+
+                    <p>
+
+                    We turn real-time intent signals into <b>HQL, BANT-qualified leads</b> - so outreach hits accounts already in-market, not after they've decided. 
+
+                    </p>
+
+                    <p>
+
+                    I can show you the list of companies currently researching solutions like {company}'s, and how we convert that into sales-ready leads for your team.
+
+                    </p>
+
+                    <p>
+
+                    <b>Happy to share the list first, worth a look before we jump on a call?</b>
+
+                    </p>
+
+                    </div>
+
+                    </div>
+
+                    <hr style="margin:25px 0;">
+
+                    <div
+
+                    id="signaturePreview"
+
+                    style="
+
+                    padding:15px;
+
+                    background:#fafafa;
+
+                    border:1px solid #ddd;
+
+                    border-radius:8px;
+
+                    ">
+
+                    <img src="/static/regards.png" width="200">
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+
+                    <tr>
+
+                    <td width="80" style="position: relative;top: -9em;">
+
+                    <img src="/static/logo.png" width="120">
+
+                    </td>
+
+                    <td>
+
+                    <div style="font-family:Arial,sans-serif;font-size:10.5px;line-height:1.5;">
+
+                    <span style="color:#f58220;font-size:25px;font-weight:bold;">
+
+                    Rameshwar Thakur
+
+                    </span><br>
+
+                    <b>Sales Lead – Valasys Media</b>
+
+                    <hr>
+
+                    <b style="color:#f58220;">Phone</b>
+
+                    995-3216-767
+
+                    &nbsp;
+
+                    <b style="color:#f58220;">Website</b>
+
+                    valasys.com
+
+                    <br>
+
+                    <b style="color:#f58220;">Email</b>
+
+                    rameshwar@valasys.com
+
+                    <br>
+
+                    <b style="color:#f58220;">Address</b>
+
+                    Office 801, 8th Floor, Cerebrum IT Park- B3, Kalyani Nagar, Pune, 411014
+
+                    <br><br>
+
+                    <img src="/static/pinterest.png" width="30">
+
+                    <img src="/static/youtube.png" width="30">
+
+                    <img src="/static/facebook.png" width="30">
+
+                    <img src="/static/instagram.png" width="30">
+
+                    <img src="/static/linkedin.png" width="30">
+
+                    <img src="/static/x.png" width="30">
+
+                    <br><br>
+
+                    <img src="/static/awards.png" width="800" style="position: relative;left: -9em;">
+
+                    </div>
+
+                    </td>
+
+                    </tr>
+
+                    </table>
+
+                    </div>
+
+                    <small style="color: #718096; margin-top: 5px; display: block;">
+
+                        Use {company}, {first_name}, {title} as placeholders
+
+                    </small>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button class="btn-cancel" onclick="closeEmailModal()">
+
+                <i class="fas fa-times"></i>
+
+                Cancel
+
+            </button>
+
+            <button class="btn-send" id="sendBtn" onclick="sendEmails()">
+
+                <span class="btn-text">
+
+                    <i class="fas fa-paper-plane"></i>
+
+                    Send Emails
+
+                </span>
+
+                <div class="spinner"></div>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    // Pagination variables
+
+    let currentPage = 1;
+
+    const rowsPerPage = 15;
+
+    let allRows = [];
+
+    let filteredRows = [];
+
+    // Initialize on page load
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        allRows = Array.from(document.querySelectorAll('.data-row'));
+
+        filteredRows = [...allRows];
+
+        showPage(1);
+
+    });
+
+    // Search function
+
+    function searchTable() {
+
+        const input = document.getElementById('searchInput');
+
+        const filter = input.value.toLowerCase();
+
+        filteredRows = allRows.filter(row => {
+
+            const text = row.textContent.toLowerCase();
+
+            return text.includes(filter);
+
+        });
+
+        // Update total count
+
+        document.getElementById('totalRows').textContent = filteredRows.length;
+
+        // Reset to page 1 after search
+
+        currentPage = 1;
+
+        showPage(1);
+
+    }
+
+    // Show specific page
+
+    function showPage(page) {
+
+        currentPage = page;
+
+        // Hide all rows
+
+        allRows.forEach(row => row.style.display = 'none');
+
+        // Calculate start and end indices
+
+        const start = (page - 1) * rowsPerPage;
+
+        const end = start + rowsPerPage;
+
+        // Show only rows for current page
+
+        const rowsToShow = filteredRows.slice(start, end);
+
+        rowsToShow.forEach(row => row.style.display = '');
+
+        // Update pagination info
+
+        const showingStart = filteredRows.length > 0 ? start + 1 : 0;
+
+        const showingEnd = Math.min(end, filteredRows.length);
+
+        document.getElementById('showingStart').textContent = showingStart;
+
+        document.getElementById('showingEnd').textContent = showingEnd;
+
+        // Generate pagination buttons
+
+        generatePagination();
+
+        // Update selection
+
+        updateSelection();
+
+    }
+
+    // Generate pagination buttons
+
+    // Generate pagination buttons
+
+    function generatePagination() {
+
+        const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+        const paginationContainer = document.getElementById('paginationButtons');
+
+        paginationContainer.innerHTML = '';
+
+        if (totalPages <= 1) {
+
+            return;
+
+        }
+
+        // Previous button
+
+        const prevBtn = document.createElement('button');
+
+        prevBtn.className = 'page-btn pagination-prev';
+
+        prevBtn.innerHTML = `
+
+            <i class="fas fa-chevron-left"></i>
+
+        `;
+
+        prevBtn.disabled = currentPage === 1;
+
+        prevBtn.onclick = () => {
+
+            if (currentPage > 1) {
+
+                showPage(currentPage - 1);
+
+            }
+
+        };
+
+        paginationContainer.appendChild(prevBtn);
+
+
+
+        // Function to create page button
+
+        function createPageButton(page) {
+
+            const pageBtn = document.createElement('button');
+
+            pageBtn.className =
+
+                'page-btn' + (page === currentPage ? ' active' : '');
+
+            pageBtn.textContent = page;
+
+            pageBtn.onclick = () => showPage(page);
+
+            paginationContainer.appendChild(pageBtn);
+
+        }
+
+
+
+        // Function to create dots
+
+        function createDots() {
+
+            const dots = document.createElement('span');
+
+            dots.className = 'pagination-dots';
+
+            dots.textContent = '...';
+
+            paginationContainer.appendChild(dots);
+
+        }
+
+
+
+        /*
+
+        * Pagination logic
+
+        *
+
+        * Example with 20 pages:
+
+        *
+
+        * Page 1:
+
+        * Previous  1  2  3  4  5 ... 20  Next
+
+        *
+
+        * Page 10:
+
+        * Previous  1 ... 8 9 10 11 12 ... 20  Next
+
+        *
+
+        * Page 20:
+
+        * Previous  1 ... 16 17 18 19 20  Next
+
+        */
+
+        if (totalPages <= 7) {
+
+            // Show all pages when there aren't many
+
+            for (let i = 1; i <= totalPages; i++) {
+
+                createPageButton(i);
+
+            }
+
+        } else {
+
+            // Always show first page
+
+            createPageButton(1);
+
+            // Pages near current page
+
+            if (currentPage > 4) {
+
+                createDots();
+
+            }
+
+            let startPage;
+
+            let endPage;
+
+            if (currentPage <= 4) {
+
+                startPage = 2;
+
+                endPage = 5;
+
+            } else if (currentPage >= totalPages - 3) {
+
+                startPage = totalPages - 4;
+
+                endPage = totalPages - 1;
+
+            } else {
+
+                startPage = currentPage - 2;
+
+                endPage = currentPage + 2;
+
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+
+                createPageButton(i);
+
+            }
+
+            // Dots before last page
+
+            if (currentPage < totalPages - 3) {
+
+                createDots();
+
+            }
+
+            // Always show last page
+
+            createPageButton(totalPages);
+
+        }
+
+
+
+        // Next button
+
+        const nextBtn = document.createElement('button');
+
+        nextBtn.className = 'page-btn pagination-next';
+
+        nextBtn.innerHTML = `
+
+            <i class="fas fa-chevron-right"></i>
+
+        `;
+
+        nextBtn.disabled = currentPage === totalPages;
+
+        nextBtn.onclick = () => {
+
+            if (currentPage < totalPages) {
+
+                showPage(currentPage + 1);
+
+            }
+
+        };
+
+        paginationContainer.appendChild(nextBtn);
+
+    }
+
+
+
+    // Loading state for search
+
+    const form = document.getElementById('searchForm');
+
+    const searchBtn = document.getElementById('searchBtn');
+
+    form.addEventListener('submit', function() {
+
+        searchBtn.classList;
+
+        searchBtn.classList.add('loading');
+
+        searchBtn.disabled = true;
+
+    });
+
+    // Reset filter
+
+    function resetFilter() {
+
+        window.location.href = '/';
+
+    }
+
+    // Get only the profiles currently visible after search + pagination
+
+    function getVisibleCheckboxes() {
+
+        return filteredRows
+
+            .filter(row => row.style.display !== 'none')
+
+            .map(row => row.querySelector('.prospect-checkbox'))
+
+            .filter(cb => cb);
+
+    }
+
+    // Selection Management
+
+    function updateSelection() {
+
+        const checkboxes = document.querySelectorAll('.prospect-checkbox:checked');
+
+        const count = checkboxes.length;
+
+        document.getElementById('selectedCount').textContent = count;
+
+        document.getElementById('selectionText').textContent = 
+
+            count === 0 ? 'No prospects selected' : 
+
+            count === 1 ? '1 prospect selected' : 
+
+            `${count} prospects selected`;
+
+        document.getElementById('sendEmailBtn').disabled = count === 0;
+        document.getElementById('queueEmailBtn').disabled = count === 0;
+
+    }
+
+    // Select All
+
+    function selectAll() {
+
+        const checkboxes = getVisibleCheckboxes();
+
+        checkboxes.forEach(cb => cb.checked = true);
+
+        document.getElementById('selectAllCheckbox').checked = true;
+
+        updateSelection();
+
+    }
+
+    // Toggle Select All from header checkbox
+
+    function toggleSelectAll(checkbox) {
+
+        const checkboxes = getVisibleCheckboxes();
+
+        checkboxes.forEach(cb => {
+
+            cb.checked = checkbox.checked;
+
+        });
+
+        updateSelection();
+
+    }
+
+    // Email Modal Functions
+
+    const signature = `
+
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family:Arial,sans-serif;font-size:14px;">
+
+        <tr>
+
+        <td colspan="2" style="padding-bottom:12px;">
+
+        <img src="cid:regards" width="100" style="display:block;">
+
+        </td>
+
+        </tr>
+
+        <tr>
+
+        <td width="92" valign="top" style="padding-top:25px;">
+
+            <a href="https://valasys.com">
+
+                <img src="cid:logo"
+
+                    width="100"
+
+                    style="display:block;">
+
+            </a>
+
+        </td>
+
+        <td valign="top" style="padding-left:18px;">
+
+        <div style="
+
+        font-size:15px;
+
+        font-weight:bold;
+
+        color:#f58220;
+
+        line-height:1;
+
+        ">
+
+        Rameshwar Thakur
+
+        </div>
+
+        <div style="
+
+        font-size:15px;
+
+        font-weight:bold;
+
+        color:#333;
+
+        margin-top:6px; 
+
+        ">
+
+        Sales Lead – Valasys Media
+
+        </div>
+
+        <div style="
+
+        height:3px;
+
+        background:#f58220;
+
+        margin:14px 0 12px 0;
+
+        width:745px;
+
+        ">
+
+        </div>
+
+        <table cellpadding="0" cellspacing="0" border="0"
+
+            style="font-size:12px; line-height:1.8; color:#333;">
+
+            <!-- Phone + Website -->
+
+            <tr>
+
+                <td>
+
+                    <span style="color:#f58220;">Phone</span>
+
+                    <a href="tel:995-3216-767"
+
+                    style="color:#555;text-decoration:none;margin-left:6px;">
+
+                        995-3216-767
+
+                    </a>
+
+                    <span style="display:inline-block;width:24px;"></span>
+
+                    <span style="color:#f58220;">Website</span>
+
+                    <a href="https://valasys.com"
+
+                    style="color:#555;text-decoration:underline;margin-left:6px;">
+
+                        valasys.com
+
+                    </a>
+
+                </td>
+
+            </tr>
+
+            <!-- Email -->
+
+            <tr>
+
+                <td>
+
+                    <span style="color:#f58220;">Email</span>
+
+                    <a href="mailto:rameshwar@valasys.com"
+
+                    style="color:#555;text-decoration:underline;margin-left:6px;">
+
+                        rameshwar@valasys.com
+
+                    </a>
+
+                </td>
+
+            </tr>
+
+            <!-- Address -->
+
+            <tr>
+
+                <td>
+
+                    <span style="color:#f58220;">Address</span>
+
+                    <span style="margin-left:6px;">
+
+                        Office 801, 8th Floor, Cerebrum IT Park- B3,
+
+                        Kalyani Nagar, Pune, 411014
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <div style="margin-top:18px;">
+
+        <a href="https://www.pinterest.com/valasysmedia/">
+
+        <img src="cid:pinterest" width="25">
+
+        </a>
+
+        <a href="https://www.youtube.com/@ValasysMedia">
+
+        <img src="cid:youtube" width="25">
+
+        </a>
+
+        <a href="https://www.facebook.com/ValasysMedia">
+
+        <img src="cid:facebook" width="25">
+
+        </a>
+
+        <a href="https://www.instagram.com/valasysmedia/">
+
+        <img src="cid:instagram" width="25">
+
+        </a>
+
+        <a href="https://www.linkedin.com/company/valasys-media/">
+
+        <img src="cid:linkedin" width="25">
+
+        </a>
+
+        <a href="https://x.com/ValasysB2B">
+
+        <img src="cid:x" width="25">
+
+        </a>
+
+        </div>
+
+        </td>
+
+        </tr>
+
+        </table>
+
+        <div style="margin-top:18px;">
+
+        <a href="https://globeeawards.com/2026-winners-achievement-awards/#:~:text=Valasys%20Media">
+
+        <img src="cid:awards"
+
+        width="650"
+
+        style="display:block;">
+
+        </a>
+
+        </div>
+
+    `;
+
+    window.emailSignature = signature;
+
+    const subjectPatterns = [
+
+    "How is {company} finding in-market accounts?",
+
+    "How does {company} spot ready-to-buy accounts?"
+
+    ];
+
+    let subjectIndex = 0;
+
+    function getNextSubject() {
+
+        const subject = subjectPatterns[subjectIndex];
+
+        subjectIndex = (subjectIndex + 1) % subjectPatterns.length;
+
+        return subject;
+
+    }
+
+    let emailAction = 'send';
+
+    function openEmailModal(action = 'send') {
+
+        const count = document.querySelectorAll('.prospect-checkbox:checked').length;
+
+        if (count === 0) {
+
+            alert('Please select at least one prospect');
+
+            return;
+
+        }
+
+        emailAction = action;
+
+        document.getElementById('emailSubject').value = getNextSubject();
+
+        const sendBtn = document.getElementById('sendBtn');
+
+        const btnText = sendBtn.querySelector('.btn-text');
+
+        if (emailAction === 'queue') {
+
+            btnText.innerHTML = '<i class="fas fa-clock"></i> Queue Emails';
+
+        } else {
+
+            btnText.innerHTML = '<i class="fas fa-paper-plane"></i> Send Emails';
+
+        }
+
+        document.getElementById('emailModal').style.display = 'block';
+
+    }
+
+    function closeEmailModal() {
+
+        document.getElementById('emailModal').style.display = 'none';
+
+        emailAction = 'send';
+
+        const sendBtn = document.getElementById('sendBtn');
+
+        if (sendBtn) {
+
+            const btnText = sendBtn.querySelector('.btn-text');
+
+            if (btnText) {
+
+                btnText.innerHTML = '<i class="fas fa-paper-plane"></i> Send Emails';
+
+            }
+
+        }
+
+    }
+
+    // Close modal when clicking outside
+
+    window.onclick = function(event) {
+
+        const modal = document.getElementById('emailModal');
+
+        if (event.target == modal) {
+
+            closeEmailModal();
+
+        }
+
+    }
+
+    // Send Emails
+
+    async function sendEmails() {
+
+        const checkboxes = document.querySelectorAll('.prospect-checkbox:checked');
+
+        const subject = document.getElementById('emailSubject').value;
+
+        let body = editor.getData();
+
+        /* Force email body to Arial 10px */
+
+        body = `
+
+        <div style="
+
+            font-family: Arial, sans-serif;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            color: #333;
+
+        ">
+
+            ${body}
+
+        </div>
+
+        `;
+
+        let payloadBody = body + signature;
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**logo**\.**png/g, "cid:logo");
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**regards**\.**png/g, "cid:regards");
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**awards**\.**png/g, "cid:awards");
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**facebook**\.**png/g, "cid:facebook");
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**instagram**\.**png/g, "cid:instagram");
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**linkedin**\.**png/g, "cid:linkedin");
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**youtube**\.**png/g, "cid:youtube");
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**pinterest**\.**png/g, "cid:pinterest");
+
+        payloadBody = payloadBody.replace(/**\.\.\/**static**\/**x**\.**png/g, "cid:x");
+
+        if (!subject || !body) {
+
+            alert('Please fill in subject and body');
+
+            return;
+
+        }
+
+        const recipients = [];
+
+        checkboxes.forEach(cb => {
+
+            recipients.push({
+
+                email: cb.dataset.email,
+
+                first_name: cb.dataset.firstname,
+
+                title: cb.dataset.title,
+
+                company: cb.dataset.company
+
+            });
+
+        });
+
+        const sendBtn = document.getElementById('sendBtn');
+
+        sendBtn.classList.add('loading');
+
+        sendBtn.disabled = true;
+
+        try {
+
+            const endpoint = emailAction === 'queue' ? '/queue-emails' : '/send-emails';
+
+            const response = await fetch(endpoint, {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Content-Type': 'application/json'
+
+                },
+
+                body: JSON.stringify({
+
+                    recipients: recipients,
+
+                    subject: subject,
+
+                    body: body,
+
+                    signature: window.emailSignature
+
+                })
+
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+
+                closeEmailModal();
+
+                if (emailAction === 'queue') {
+
+                    const queued = result.queued ?? result.count ?? recipients.length;
+
+                    showSuccess(`${queued} emails queued for the next available 9:00 AM IST sending window.`);
+
+                    setTimeout(() => {
+                        window.location.href = '/queued-emails';
+                    }, 700);
+
+                } else {
+
+                    const sent = result.sent ?? 0;
+
+                    const queued = result.queued ?? 0;
+
+                    if (queued > 0) {
+
+                        showSuccess(`Sent ${sent} emails. ${queued} emails queued for the next 9:00 AM IST sending window.`);
+
+                    } else {
+
+                        showSuccess(`Successfully sent ${sent} emails!`);
+
+                    }
+
+                }
+
+                // Uncheck selected prospects. Queued emails are stored by the backend
+
+                // and are not added to or displayed in the prospects table.
+
+                checkboxes.forEach(cb => cb.checked = false);
+
+                document.getElementById('selectAllCheckbox').checked = false;
+
+                updateSelection();
+
+            } else {
+
+                alert('Error: ' + (result.error || 'Failed to process emails'));
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert('Failed to send emails: ' + error.message);
+
+         } finally {
+
+            sendBtn.classList.remove('loading');
+
+            sendBtn.disabled = false;
+
+        }
+
+    }  
+
+    // Show Success Message
+
+    function showSuccess(message) {
+
+        const successMsg = document.getElementById('successMessage');
+
+        const successText = document.getElementById('successText');
+
+        successText.textContent = message;
+
+        successMsg.classList.add('show');
+
+        setTimeout(() => {
+
+            successMsg.classList.remove('show');
+
+        }, 5000);
+
+    }
+
+    // Export to CSV
+
+    // Export ONLY selected prospects to CSV
+
+    function exportToCSV() {
+
+        const table = document.getElementById('dataTable');
+
+        // Get only selected checkboxes
+
+        const selectedCheckboxes = document.querySelectorAll(
+
+            '.prospect-checkbox:checked'
+
+        );
+
+        // If nothing is selected
+
+        if (selectedCheckboxes.length === 0) {
+
+            alert('Please select at least one prospect to export.');
+
+            return;
+
+        }
+
+        let csv = [];
+
+        // Headers (skip checkbox column)
+
+        const headers = [];
+
+        const headerCells = table.querySelectorAll('thead th');
+
+        for (let i = 1; i < headerCells.length; i++) {
+
+            headers.push(headerCells[i].textContent.trim());
+
+        }
+
+        csv.push(headers.join(','));
+
+        // Export ONLY selected rows
+
+        selectedCheckboxes.forEach(checkbox => {
+
+            const tr = checkbox.closest('tr');
+
+            const cells = tr.querySelectorAll('td');
+
+            const row = [];
+
+            // Skip checkbox column
+
+            for (let i = 1; i < cells.length; i++) {
+
+                let value = "";
+
+                // Export actual URL instead of View / Visit
+
+                const link = cells[i].querySelector("a");
+
+                if (link) {
+
+                    value = link.href;
+
+                } else {
+
+                    value = cells[i].textContent
+
+                        .trim()
+
+                        .replace(/\s+/g, " ");
+
+                }
+
+                // Escape quotes
+
+                value = value.replace(/"/g, '""');
+
+                row.push(`"${value}"`);
+
+            }
+
+            csv.push(row.join(','));
+
+        });
+
+        // Download CSV
+
+        const csvContent = csv.join('\n');
+
+        const blob = new Blob(
+
+            [csvContent],
+
+            { type: 'text/csv;charset=utf-8;' }
+
+        );
+
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+
+        a.href = url;
+
+        a.download = `selected_prospects_${new Date().toISOString().split('T')[0]}.csv`;
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        document.body.removeChild(a);
+
+        window.URL.revokeObjectURL(url);
+
+    }
+
+
+
+
+
+
+
+    ClassicEditor.create(document.querySelector('#emailBodyEditor'), {
+
+    toolbar: [
+
+        'heading',
+
+        '|',
+
+        'bold',
+
+        'italic',
+
+        'link',
+
+        'bulletedList',
+
+        'numberedList',
+
+        '|',
+
+        'outdent',
+
+        'indent',
+
+        '|',
+
+        'undo',
+
+        'redo'
+
+    ]
+
+}).then(newEditor => {
+
+    editor = newEditor;
+
+});
+
+
+
+function showToast(message, success = true){
+
+    const toast = document.getElementById("toast");
+
+    toast.innerHTML = success
+
+        ? `<i class="fas fa-check-circle"></i> ${message}`
+
+        : `<i class="fas fa-times-circle"></i> ${message}`;
+
+    toast.className = success
+
+        ? "toast show"
+
+        : "toast error show";
+
+    setTimeout(() => {
+
+        toast.className = "toast";
+
+    }, 3000);
+
+}
+
+
+
+// ================= CSV COMPANY UPLOAD =================
+
+const companyCsv = document.getElementById("companyCsv");
+
+const companyNameInput = document.getElementById("companyName");
+
+const csvFileText = document.getElementById("csvFileText");
+
+const csvRemoveBtn = document.getElementById("csvRemoveBtn");
+
+companyCsv.addEventListener("change", function () {
+
+    if (this.files.length > 0) {
+
+        const file = this.files[0];
+
+        if (!file.name.toLowerCase().endsWith(".csv")) {
+
+            alert("Please upload a CSV file.");
+
+            this.value = "";
+
+            return;
+
+        }
+
+        csvFileText.textContent = file.name;
+
+        csvFileText.classList.remove("csv-upload-text");
+
+        csvFileText.classList.add("csv-file-name");
+
+        csvRemoveBtn.style.display = "block";
+
+        // User should use either Company Name OR CSV
+
+        companyNameInput.value = "";
+
+        companyNameInput.disabled = true;
+
+    }
+
+});
+
+function removeCsvFile(event) {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    companyCsv.value = "";
+
+    csvFileText.textContent = "Choose CSV file";
+
+    csvFileText.classList.remove("csv-file-name");
+
+    csvFileText.classList.add("csv-upload-text");
+
+    csvRemoveBtn.style.display = "none";
+
+    companyNameInput.disabled = false;
+
+}
+
+</script>
+
+<div id="toast" class="toast"></div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchBtn = document.getElementById("searchBtn");
+
+    const searchLoader = document.getElementById("searchLoader");
+
+    if (!searchBtn || !searchLoader) {
+
+        return;
+
+    }
+
+
+
+    function showSearchLoader() {
+
+        // Prevent multiple clicks
+
+        searchBtn.disabled = true;
+
+        // Change button state
+
+        searchBtn.classList.add("searching");
+
+        // Show full page loader
+
+        searchLoader.classList.add("active");
+
+        // Prevent scrolling while searching
+
+        document.body.style.overflow = "hidden";
+
+    }
+
+
+
+    function hideSearchLoader() {
+
+        searchBtn.disabled = false;
+
+        searchBtn.classList.remove("searching");
+
+        searchLoader.classList.remove("active");
+
+        document.body.style.overflow = "";
+
+    }
+
+
+
+    /*
+
+     * Expose functions globally.
+
+     * Useful if your search is performed using fetch/AJAX.
+
+     */
+
+    window.showSearchLoader = showSearchLoader;
+
+    window.hideSearchLoader = hideSearchLoader;
+
+
+
+    /*
+
+     * If your search uses a normal HTML form submission,
+
+     * the loader will remain visible while the new page loads.
+
+     */
+
+    const searchForm = searchBtn.closest("form");
+
+    if (searchForm) {
+
+        searchForm.addEventListener("submit", function () {
+
+            showSearchLoader();
+
+        });
+
+    }
+
+
+
+    /*
+
+     * If someone clicks the button directly.
+
+     */
+
+    searchBtn.addEventListener("click", function () {
+
+        if (searchBtn.disabled) {
+
+            return;
+
+        }
+
+        showSearchLoader();
+
+    });
+
+});
+
+</script>
+
+</body>
+
+</html>

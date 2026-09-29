@@ -1,0 +1,136 @@
+/* ============================================================
+   SHARED DARK-MODE FIXES
+   Loaded last on every app page so these win over page styles.
+
+   The brand variables below are dark navy (#0a2b60) and are used for
+   text, icons, borders and button backgrounds. Navy text is invisible
+   on the dark surfaces, so in dark mode they switch to a logo blue that
+   reads on dark cards (>= 3.6:1) and still carries white button text
+   (~4.2:1).
+   ============================================================ */
+
+html[data-theme="dark"] {
+    --valasys-orange: #2f80c8;
+    --brand-orange: #2f80c8;
+    --si-blue: #2f80c8;
+    --brand-blue: #2f80c8;
+    --dark-accent: #3fb6e0;          /* bright logo cyan for small labels/icons */
+}
+
+/* ---------- Small uppercase labels ("SALES INTELLIGENCE", etc.) ---------- */
+html[data-theme="dark"] .si-page-kicker,
+html[data-theme="dark"] .hero-kicker,
+html[data-theme="dark"] .sent-kicker {
+    color: var(--dark-accent) !important;
+}
+
+/* ---------- Icons that used the navy brand color ---------- */
+html[data-theme="dark"] h2 > .bi-table,
+html[data-theme="dark"] .badge > .bi-database,
+html[data-theme="dark"] .prospect-search-hint > i,
+html[data-theme="dark"] .queue-info i,
+html[data-theme="dark"] strong > .bi-info-circle,
+html[data-theme="dark"] .stat-icon,
+html[data-theme="dark"] .stat-icon i {
+    color: var(--dark-accent) !important;
+}
+
+html[data-theme="dark"] .stat-icon {
+    background: rgba(63, 182, 224, .14) !important;
+}
+
+/* ---------- Logo: its lettering is navy, so give it a light plate ---------- */
+html[data-theme="dark"] .si-logo-full {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 4px 8px;
+    box-shadow: 0 0 0 1px rgba(63, 182, 224, .25);
+}
+
+/* ---------- Bootstrap light badges (e.g. Extracted Date) ---------- */
+html[data-theme="dark"] .badge.text-bg-light {
+    color: #e6edf5 !important;
+    background-color: #2a3038 !important;
+    border-color: #3a414b !important;
+}
+
+/* ---------- DataTables (Sent Emails, Queue, Dashboard) ----------
+   jquery.dataTables.css paints rows and headers white. */
+html[data-theme="dark"] table.dataTable,
+html[data-theme="dark"] table.dataTable thead th,
+html[data-theme="dark"] table.dataTable thead td,
+html[data-theme="dark"] table.dataTable tbody tr,
+html[data-theme="dark"] table.dataTable tbody td,
+html[data-theme="dark"] table.dataTable tbody th,
+html[data-theme="dark"] .dataTables_scrollHead,
+html[data-theme="dark"] .dataTables_scrollHeadInner,
+html[data-theme="dark"] .dataTables_scrollBody {
+    background-color: #1b2027 !important;
+    color: #e6edf5 !important;
+    border-color: #2f3640 !important;
+}
+
+html[data-theme="dark"] table.dataTable thead th,
+html[data-theme="dark"] table.dataTable thead td {
+    background-color: #20262e !important;
+}
+
+html[data-theme="dark"] table.dataTable.table-hover > tbody > tr:hover > *,
+html[data-theme="dark"] table.dataTable.hover tbody tr:hover,
+html[data-theme="dark"] table.dataTable.display tbody tr:hover > * {
+    background-color: #242b34 !important;
+    box-shadow: none !important;
+}
+
+html[data-theme="dark"] table.dataTable.display tbody tr > .sorting_1,
+html[data-theme="dark"] table.dataTable.display tbody tr.odd > .sorting_1,
+html[data-theme="dark"] table.dataTable.display tbody tr.even > .sorting_1,
+html[data-theme="dark"] table.dataTable.stripe tbody tr.odd,
+html[data-theme="dark"] table.dataTable.display tbody tr.odd {
+    background-color: #1e242c !important;
+    box-shadow: none !important;
+}
+
+html[data-theme="dark"] .dataTables_wrapper .dataTables_length,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_filter,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_info,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_processing,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .dataTables_wrapper .dataTables_length select,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_filter input {
+    background-color: #20262e !important;
+    color: #e6edf5 !important;
+    border: 1px solid #3a414b !important;
+}
+
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+    color: #7b8794 !important;
+}
+
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+html[data-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    color: #ffffff !important;
+    background: var(--brand-orange) !important;
+    border-color: var(--brand-orange) !important;
+}
+
+/* ---------- Form controls that stay white ---------- */
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] select.form-select {
+    color-scheme: dark;
+}
+
+/* ---------- Export CSV (light teal button with white text) ---------- */
+html[data-theme="dark"] .action-buttons .btn-success {
+    background-color: #1d7fa6 !important;
+    border-color: #1d7fa6 !important;
+    color: #ffffff !important;
+}

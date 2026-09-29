@@ -1,0 +1,54 @@
+<!-- Sales Intelligence Sidebar -->
+<aside class="si-sidebar" id="siSidebar" aria-label="Main navigation">
+    <div class="si-sidebar-head">
+        <a href="/" class="si-logo-link" aria-label="Sales Intelligence home">
+            <img src="/static/main-new.png" alt="Sales Intelligence" class="si-logo-full">
+        </a>
+        <button type="button" class="si-sidebar-toggle" id="sidebarToggle"
+                aria-label="Collapse sidebar" aria-expanded="true" title="Collapse sidebar">
+            <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
+    </div>
+
+    <div class="si-sidebar-menu">
+        <div class="si-menu-label">Workspace</div>
+
+        <a class="si-nav-link" href="/" data-route="/">
+            <span class="si-nav-icon"><i class="bi bi-speedometer2"></i></span>
+            <span class="si-nav-text">Dashboard</span>
+        </a>
+
+        <a class="si-nav-link" href="/sent-emails" data-route="/sent-emails">
+            <span class="si-nav-icon"><i class="bi bi-send-fill"></i></span>
+            <span class="si-nav-text">Sent Emails</span>
+        </a>
+
+        <a class="si-nav-link" href="/queued-emails" data-route="/queued-emails">
+            <span class="si-nav-icon"><i class="bi bi-clock-history"></i></span>
+            <span class="si-nav-text">Queue</span>
+        </a>
+
+        <a class="si-nav-link" href="/blacklist" data-route="/blacklist">
+            <span class="si-nav-icon"><i class="bi bi-ban-fill"></i></span>
+            <span class="si-nav-text">Blacklisted</span>
+        </a>
+    </div>
+
+    <div class="si-sidebar-bottom">
+        <div class="si-user-card">
+            <div class="si-avatar" id="siUserAvatar">U</div>
+            <div class="si-user-copy">
+                <div class="si-user-label">Logged in as</div>
+                <div class="si-user-name" id="siUserName">{{ user_name|default('Logged-in User', true) }}</div>
+                <div class="si-user-email" id="siUserEmail">{{ user_email|default('User account', true) }}</div>
+            </div>
+        </div>
+
+        <a href="/logout" class="si-logout-btn" id="sidebarLogout">
+            <span class="si-nav-icon"><i class="bi bi-box-arrow-right"></i></span>
+            <span class="si-nav-text">Logout</span>
+        </a>
+    </div>
+</aside>
+
+<div class="si-sidebar-backdrop" id="sidebarBackdrop"></div>
